@@ -12,7 +12,7 @@
     <tbody>
 
         <tr ng-repeat="r in repos | orderBy: 'name'">
-            <td><a href="{{r.html_url}}" target="_blank">{{r.name}}</a></td>
+            <td><a href="#/repo/{{r.owner.login}}/{{r.name}}">{{r.name}}</a></td>
             <td>{{r.owner.login}}</td>
         </tr>
     </tbody>

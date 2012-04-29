@@ -3,22 +3,28 @@
 
 
 
-WelcomeController.$inject = ['$scope', '$location', 'UserRepos'];
 
+WelcomeController.$inject = ['$scope', '$location', 'UserRepos'];
 function WelcomeController($scope, $location, UserRepos) {
     $scope.apikey = urlParams.token;  //code woo
     
     $scope.repos = UserRepos.query();
-    
-    
-    
-    
+
 };
 
 
-function MyCtrl2() {
-}
-MyCtrl2.$inject = [];
+RepoController.$inject = ['$scope', '$routeParams', 'RepoIssues'];
+function RepoController($scope, $routeParams, RepoIssues) {
+    
+    $scope.repoName = $routeParams.repoName;
+    $scope.owner = $routeParams.owner;
+    
+    $scope.issues = RepoIssues.query({user:$scope.owner, repo: $scope.repoName});
+
+};
+
+
+
 
 
 

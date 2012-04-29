@@ -11,13 +11,13 @@ var urlParams = {};
        urlParams[d(e[1])] = d(e[2]);
 })();
 
-
+var api_token = urlParams.token;
 
 var app = angular.module('app', ['ngResource'], function($routeProvider) {
 
-  $routeProvider.when('/welcome', {
-    template   : 'partials/welcome.html',
-    controller : WelcomeController  
+  $routeProvider.when('/repo/:owner/:repoName', {
+    template   : 'partials/repo.html',
+    controller : RepoController  
   });
   
   $routeProvider.when('/', {
