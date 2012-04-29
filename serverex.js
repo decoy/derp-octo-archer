@@ -1,9 +1,13 @@
+process.env.PORT = 9099;
+
+
 // Web application which authenticates to github
 var github = require('octonode');
 var qs = require('querystring');
 var url = require('url');
 var express = require('express');
 var app = express.createServer();
+
 
 
 // Build the authorization config and url
@@ -34,3 +38,5 @@ app.get('/auth', function(req, res){
 });
 
 app.listen(process.env.PORT);
+
+console.log("listening on: " + process.env.PORT)
