@@ -1,5 +1,4 @@
-process.env.PORT = 9099;
-
+var config = require('./config');
 
 // Web application which authenticates to github
 var github = require('octonode');
@@ -12,8 +11,8 @@ var app = express.createServer();
 
 // Build the authorization config and url
 var auth_url = github.auth.config({
-    client_id: '9b811fa8146dbd5d0b35',
-    client_secret: '503ad50e04a62b1e01df184d951a204dbca3d77d'
+    client_id: config.github.client_id,
+    client_secret: config.github.client_secret
 }).login(['user', 'repo', 'gist']);
 
 app.configure(function(){
@@ -31,12 +30,13 @@ app.get('/connect', function(req, res){
 app.get('/auth', function(req, res){
     uri = url.parse(req.url);
     github.auth.login(qs.parse(uri.query).code, function (err, token) {
+      res.redirect('/app.html?token=' + token);
       console.log(token);
     });
     
-    res.render('index.html');
+    //res.render('index.html');
 });
 
-app.listen(process.env.PORT);
+app.listen(config.web.port);
 
-console.log("listening on: " + process.env.PORT)
+console.log("listening on: " + config.web.port)

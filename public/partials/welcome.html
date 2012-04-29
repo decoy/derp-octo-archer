@@ -1,0 +1,19 @@
+<p>welcome</p>
+<p>
+  github key:  {{apikey}}
+</p>
+<table>
+    <thead>
+        <tr>
+            <th>Project</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr ng-repeat="r in repos | orderBy: 'name'">
+            <td><a href="{{r.html_url}}" target="_blank">{{r.name}}</a></td>
+            <td>{{r.owner.login}}</td>
+        </tr>
+    </tbody>
+</table>

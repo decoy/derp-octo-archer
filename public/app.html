@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app>
+<html ng-app="app">
 <head>
     <meta charset="utf-8">
     <title>Derp-Octo-Archer - A GitHub issues editor</title>
@@ -31,31 +31,7 @@
 
     <div class="container">
 
-      <!-- Main hero unit for a primary marketing message or call to action -->
-      <div class="hero-unit">
-        <h1>Derp-Octo-Archer</h1>
-        <p> A GitHub issues editor. Connect to github to get started.</p>
-        <p><a class="btn btn-primary btn-large" href="connect">Connect</a></p>
-      </div>
-
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="span4">
-          <h2>Heading</h2>
-           <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div>
-        <div class="span4">
-          <h2>Heading</h2>
-           <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
-       </div>
-        <div class="span4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div>
-      </div>
+      <ng-view></ng-view>
 
       <hr>
 
@@ -71,7 +47,10 @@
     <script src="js/jquery-1.7.2.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/angular-1.0.0rc6.min.js"></script>
-  
+    <script src="js/angular-resource-1.0.0rc6.min.js"></script>
+    <script src="app/app.js"></script>
+    <script src="app/services.js"></script>
+    <script src="app/controllers.js"></script>
       
 </body>
 </html>
