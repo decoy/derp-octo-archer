@@ -1,0 +1,10 @@
+{
+  "name": "derp-octo-archer",
+  "description": "terrible package",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": ">= 2.5.9",
+    "octonode": ">= 0.1.3",
+    "jade": ">= 0.25.0"
+  }
+}
