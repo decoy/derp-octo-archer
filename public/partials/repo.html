@@ -1,7 +1,58 @@
-{{repoName}}
-{{owner}}
+<a href="#">Back to Projects</a>
 
-        <p ng-repeat="i in issues | orderBy: 'title'">
+<hr/>
 
-           {{i.title}}
-        <p>
+
+{{owner}}/{{repoName}}
+
+<hr/>
+<h3>Labels</h3>
+
+
+        <form  class="form-horizontal" ng-repeat="l in labels | orderBy: 'color'" ng-submit="saveLabel(l)" ng-controller="LabelCtrl">
+           <span>{{l.name}}</span> 
+            <input type="text" ng-model="l.color"  size="6" placeholder="color">
+            <input class="btn-primary" type="submit" value="save" />
+            <input type="button" class="btn" ng-click="delLabel(l)" value="Delete" />
+        </form>
+        
+        <form class="form-vertical" ng-submit="addLabel()" ng-controller="LabelCtrl">
+            <input type="text" ng-model="name"  size="30" placeholder="name" />
+            <input type="text" ng-model="color"  size="6" placeholder="color" style="background-color: #{{color}}" />
+            <input class="btn-primary" type="submit" value="add" />
+        </form>
+
+        <hr/>
+        
+        <div class="row-fluid">
+        
+            <div class="span6">
+                <div class="well" droppable="removeIssueMilestone">
+                    <h4>No Milestone</h4>
+                    <p class="well" draggable ng-model="i" ng-repeat="i in issues | orderBy: 'title' | filter: hasNoMilestone ">
+                       <a href="{{i.html_url}}">{{i.title}}</a>
+                       {{i.state}} {{i.milestone.title}}
+                    <p>
+                </div>
+            
+            </div>
+        
+            <div class="span6">
+                <div class="well" droppable="addIssueToMilestone" ng-model="m" ng-repeat="m in milestones | orderBy: 'due_on' | filter: compare" ng-controller="MilestoneCtrl">
+                    <h4>{{m.title}}</h4> {{m.due_on}} {{m.number}}
+                    <p class="well" draggable ng-model="i" ng-repeat="i in issues | orderBy: 'title' | filter: { milestone.number : m.number }">
+                       <a href="{{i.html_url}}">{{i.title}}</a>
+                       {{i.state}} {{i.milestone.title}}
+                    <p>
+                </div>
+
+            </div>
+            
+        </div>
+        
+
+
+
+        
+        <hr/>
+            

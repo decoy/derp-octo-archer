@@ -10,7 +10,6 @@
         </tr>
     </thead>
     <tbody>
-
         <tr ng-repeat="r in repos | orderBy: 'name'">
             <td><a href="#/repo/{{r.owner.login}}/{{r.name}}">{{r.name}}</a></td>
             <td>{{r.owner.login}}</td>
