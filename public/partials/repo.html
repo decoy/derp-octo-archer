@@ -38,10 +38,15 @@
         
             <div class="span6">
                 <div class="well" droppable="addIssueToMilestone" ng-model="m" ng-repeat="m in milestones | orderBy: 'due_on' | filter: compare" ng-controller="MilestoneCtrl">
-                    
-                    <h4>[{{m.state}}] {{m.title}} </h4> Due: {{m.due_on}}
-                    
+                    <div class="row-fluid">
+                        
+                        <div class="span5"> <h4> {{m.title}} </h4></div>
+                        
+                        <div class="span4">{{m.open_issues}} open | {{m.closed_issues}} closed</div>
+                        <div class="span3">{{m.due_on | date:short}}</div>
+                    </div>
                     <hr/>
+    
                     
                     <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: { milestone.number : m.number }">
                     <issue>
