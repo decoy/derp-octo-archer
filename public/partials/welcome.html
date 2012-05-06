@@ -1,18 +1,24 @@
-<p>welcome</p>
 <p>
   github key:  {{apikey}}
 </p>
-<table>
+
+<hr/>
+
+<table class="table table-striped">
     <thead>
         <tr>
+            <th></th>
             <th>Project</th>
-            <th>Description</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="r in repos | orderBy: 'name'">
-            <td><a href="#/repo/{{r.owner.login}}/{{r.name}}">{{r.name}}</a></td>
-            <td>{{r.owner.login}}</td>
+        <tr ng-repeat="r in repos | orderBy: ['owner.login', 'name']">
+            <td><img class="thumbnail" src="{{r.owner.avatar_url}}" height="25" /></td>
+            <td><a href="http://github.com/{{r.owner.login}}/{{r.name}}">http://github.com/{{r.owner.login}}/{{r.name}}</a></td>
+            <td><a class="btn" href="#/repo/{{r.owner.login}}/{{r.name}}"><i class="icon-calendar"></i> Planner</a></td>
+            <td><a class="btn" href="#/tasks/{{r.owner.login}}/{{r.name}}"><i class="icon-check"></i> Tasks</a></td>
         </tr>
     </tbody>
 </table>
