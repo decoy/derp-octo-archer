@@ -22,12 +22,16 @@
         
     
         <div class="well" droppable="removeIssueMilestone">
-            <h4>No Milestone</h4>
+            <div class="row-fluid">
+                <div class="span4"><h4>No Milestone</h4></div>
+                <div class="span8 "><input type="text" class="search-query pull-right" ng-model="backlogFilter" placeholder="filter" /> </div>
+            </div>
+            
             
             <hr/>
             
                                
-            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: hasNoMilestone ">
+            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter:filterBacklog ">
             </issue>
         </div>
         

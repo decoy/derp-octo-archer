@@ -62,6 +62,7 @@ function TaskIssueCtrl($scope, RepoIssues, IssueComments, Comment) {
         var newTask = new IssueComments({body: "[TASK NEW] " + $scope.description});
         newTask.$save({user:$scope.owner, repo: $scope.repoName, number: $scope.i.number}, function() {
             self.refreshIssueComments($scope.i);
+            $scope.description = '';
         });
     };
 
@@ -125,6 +126,11 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
     
     $scope.issues = RepoIssues.query({user:$scope.owner, repo: $scope.repoName});
     
+    $scope.backlogFilter = '';
+    
+    $scope.filterBacklog = function(issue) {
+       if ((issue == null || issue.milestone == null) && issue.title.toLowerCase().indexOf($scope.backlogFilter.toLowerCase()) >= 0) return true;
+    };
     
     $scope.refreshMilestones = function() {
         $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName});
