@@ -3,55 +3,69 @@
         <h1>Tasks</h1>
         <h4><a href="http://github.com/{{owner}}/{{repoName}}">http://github.com/{{owner}}/{{repoName}}</a></h4>
     </div>
-    <div class="span2"><a class="btn" href="#"><i class="icon-chevron-left"></i> Back to Projects</a></div>
+    <div class="span2"><a class="btn pull-right" href="#"><i class="icon-chevron-left"></i> Back to Projects</a></div>
 </div>
 
 <hr/>
 
-<h5>Milestone</h5>
-<select ng-model="milestone" ng-options="m.title for m in milestones">
-    <option value="">-- chose milestone --</option>
-</select>
+<div class="row-fluid">
+    <div class="span10">
+        <h5>Milestone</h5>
+        <select ng-model="milestone" ng-options="m.title for m in milestones">
+            <option value="">-- chose milestone --</option>
+        </select>
+    </div>
+    <div class="span2"><a class="btn pull-right" href="#/repo/{{owner}}/{{repoName}}"><i class="icon-calendar"></i> Planner</a></div>
+</div>
 
 <hr/>
 
+
 <div class="issue" ng-model="i" ng-repeat="i in issues | orderBy: 'number'" ng-controller="TaskIssueCtrl">
+
     <div class="row-fluid">
         <div class="span1"><h4><a href="{{i.html_url}}">#{{i.number}}</a></h4></div>
         <div class="span9"> <h4 class="pull-center">{{i.title}} <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.labels | orderBy: 'color'">{{l.name}}</span></h4> </div>
         <div class="span1">[{{i.state}}]</div>
     </div>
-
     
-    <div class="row-fluid">
-        <div class="span4 well" droppable="taskNew">
-            <h4>New</h4>
-            <hr/>
-            <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK NEW'" draggable ng-controller="TaskCtrl">
-            </task>
-            
-            <hr/>
-        <form ng-submit="addTask()">
-            <h5>Add Task</h5>
-            <input type="text" ng-model="description" size="30" placeholder="description" />
-            <input class="btn-primary" type="submit" value="Create" />
-        </form>
+    <div class="row-fluid ">
+        <div class="span4">
+            <div class="well task-bin" droppable="taskNew">
+                <h4>New</h4>
 
+                <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK NEW'" draggable ng-controller="TaskCtrl">
+                </task>
+                
+                <hr/>
+                <form ng-submit="addTask()">
+                    <h5>Add Task</h5>
+                    <input type="text" ng-model="description" size="30" placeholder="description" />
+                    <input class="btn-primary" type="submit" value="Create" />
+                </form>
+            </div>
         </div>
-        <div class="span4 well" droppable="taskWorking">
-        <h4>Working</h4>
-        <hr/>
+        
+        <div class="span4" >
+            <div class="well task-bin" droppable="taskWorking">
+            <h4>Working</h4>
+
             <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK WORKING'" draggable ng-controller="TaskCtrl">
             </task>
+            </div>
         </div>
-        <div class="span4 well" droppable="taskDone">
-        <h4>Done</h4>
-        <hr/>
+        
+        
+        <div class="span4 " >
+            <div class="well task-bin" droppable="taskDone">
+            <h4>Done</h4>
+   
             <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK DONE'" draggable ng-controller="TaskCtrl">
             </task>
+            </div>
         </div>
+        
     </div>
-    
 
 
 </div>

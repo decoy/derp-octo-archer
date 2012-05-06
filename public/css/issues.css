@@ -21,3 +21,14 @@
 .issue-label {
 
 }
+
+.task-bin {
+    margin:0px;
+    padding: 5px;
+    min-height: 130px;
+   
+}
+
+.test {
+    background-color: #eee;
+}
