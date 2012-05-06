@@ -15,11 +15,12 @@ function WelcomeController($scope, $location, UserRepos) {
 //regex to match [TASK STATUS @USER]
 var bettertask = /\[TASK[\s]+?(?:([^\s]+)[\s]+)?@?([^\s]+?)\]/;
 
-TasksController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels', 'IssueComments', 'Comment'];
-function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, IssueComments, Comment) {
+TasksController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels', 'IssueComments', 'Comment', 'GhUsers'];
+function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, IssueComments, Comment, GhUsers) {
     $scope.repoName = $routeParams.repoName;
     $scope.owner = $routeParams.owner;
     
+    $scope.user = GhUsers.get();
     
     $scope.milestone = "";
     $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName}, function() {
@@ -73,12 +74,15 @@ function TaskIssueCtrl($scope, RepoIssues, IssueComments, Comment) {
     };
     
     self.setTaskStatus = function(task, status) {
-        var matches = task.body.match(bettertask);
+    
+        //set the new body
         var body = task.body.replace(bettertask, '');
-        body = "[TASK " + status + " @" + $scope.owner + "] " + body.trim();
+        body = "[TASK " + status + " @" + $scope.user.login + "] " + body.trim();
+        
+        //create the task update object
         var newTask = new Comment({body: body});
         newTask.$save({user:$scope.owner, repo: $scope.repoName, id: task.id}, function() {
-            //if successfull, update the existing task body
+            //if successfull, update the existing task body to avoid redownloading to reparse
             task.body = body;
             //self.refreshIssueComments($scope.i);
         });

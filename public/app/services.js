@@ -67,4 +67,15 @@ var Comment = function($resource) {
 app.factory('Comment', ['$resource', Comment]);
 
 
+var GhUsers = function($resource) {
+    return $resource(
+        'https://api.github.com/user',
+        { access_token: api_token },
+        {
+        }
+    );
+};
+app.factory('GhUsers', ['$resource', GhUsers]);
+
+
 
