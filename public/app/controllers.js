@@ -53,7 +53,17 @@ TaskIssueCtrl.$inject = ['$scope', 'RepoIssues', 'IssueComments', 'Comment'];
 function TaskIssueCtrl($scope, RepoIssues, IssueComments, Comment) {
     var self = this;
     
+    $scope.description = '';
+    
     $scope.comments;
+    
+    $scope.addTask = function() {
+        //create the task update object
+        var newTask = new IssueComments({body: "[TASK NEW] " + $scope.description});
+        newTask.$save({user:$scope.owner, repo: $scope.repoName, number: $scope.i.number}, function() {
+            self.refreshIssueComments($scope.i);
+        });
+    };
 
     self.refreshIssueComments = function(issue) {
         $scope.comments = IssueComments.query({user:$scope.owner, repo: $scope.repoName, number: issue.number});

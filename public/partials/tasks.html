@@ -16,23 +16,40 @@
 <hr/>
 
 <div ng-model="i" ng-repeat="i in issues | orderBy: 'number'" ng-controller="TaskIssueCtrl">
-    <h4>{{i.number}} {{i.title}}</h4>
+    <div class="row-fluid">
+        <div class="span1"><h3><a href="{{i.html_url}}">#{{i.number}}</a></h3></div>
+        <div class="span9"> <h3>{{i.title}} <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.labels | orderBy: 'color'">{{l.name}}</span></h3> </div>
+        <div class="span1">[{{i.state}}]</div>
+    </div>
+    
+    <hr/>
     
     <div class="row-fluid">
         <div class="span4 well" droppable="taskNew">
+            <h4>New</h4>
+            <hr/>
             <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK NEW'" draggable ng-controller="TaskCtrl">
             </task>
         </div>
         <div class="span4 well" droppable="taskWorking">
+        <h4>Working</h4>
+        <hr/>
             <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK WORKING'" draggable ng-controller="TaskCtrl">
             </task>
         </div>
         <div class="span4 well" droppable="taskDone">
+        <h4>Done</h4>
+        <hr/>
             <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK DONE'" draggable ng-controller="TaskCtrl">
             </task>
         </div>
     </div>
     
+        <form class="well" ng-submit="addTask()">
+            <h5>New Task</h5>
+            <input type="text" ng-model="description" size="30" placeholder="description" />
+            <input class="btn-primary" type="submit" value="Create" />
+        </form>
 
 
 </div>
