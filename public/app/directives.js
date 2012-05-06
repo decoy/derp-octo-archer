@@ -1,3 +1,13 @@
+
+app.directive('issue', function() {
+    return {
+        restrict: 'E',
+        templateUrl: 'partials/issue_template.html',
+        replace: true
+    };
+
+});
+
 app.directive('draggable', function() {
     return {
         link: function(scope, element, attrs) {
@@ -7,6 +17,7 @@ app.directive('draggable', function() {
         }
     };
 });
+
 
 app.directive('droppable', function() {
     return {
@@ -31,6 +42,19 @@ app.directive('droppable', function() {
                 }
             });
             
+        }
+    };
+});
+
+app.directive('datepicker', function() {
+    return {
+        link: function(scope, element, attrs) {
+            $(element).datepicker();
+            $(element).datepicker( "option", "dateFormat", "yy-mm-dd");
+            $(element).change(function() {
+                alert ('changed');
+                scope.$apply();
+            });
         }
     };
 });

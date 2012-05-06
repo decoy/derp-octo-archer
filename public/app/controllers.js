@@ -22,9 +22,14 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
     
     $scope.issues = RepoIssues.query({user:$scope.owner, repo: $scope.repoName});
     
-    $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName});
     
-
+    $scope.refreshMilestones = function() {
+        $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName});
+    };
+    
+    $scope.refreshIssues = function() {
+        $scope.issues = RepoIssues.query({user:$scope.owner, repo: $scope.repoName});
+    };
 
     $scope.saveLabel = function(label) {
         label.$save({user:$scope.owner, repo: $scope.repoName, name: label.name});
@@ -70,6 +75,8 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
         $scope.labels = Labels.query({user:$scope.owner, repo: $scope.repoName});
     };
     
+    $scope.refreshMilestones();
+    
     self.refreshLabels();
     
     
@@ -90,9 +97,23 @@ function LabelCtrl($scope, Labels) {
 
 MilestoneCtrl.$inject = ['$scope', 'Milestones', 'RepoIssues'];
 function MilestoneCtrl($scope, Milestones, RepoIssues) {
-        
+      
+    $scope.title = "";
+    $scope.dueon = "";
+  
     $scope.isBelonging = function (issue) {
-        return (issu.milestone.number !=null && $scope.m.number == issue.milestone.number);
+        return (issue.milestone.number !=null && $scope.m.number == issue.milestone.number);
+    };
+    
+    $scope.add = function () {
+        var newM = new Milestones({title: $scope.title, due_on: $scope.dueon});
+        newM.$save({user:$scope.$parent.owner, repo: $scope.$parent.repoName}, function() {
+            $scope.$parent.refreshMilestones();
+            $scope.title = "";
+            $scope.dueon = "";
+        });
+        
+
     };
         
     $scope.addIssueToMilestone = function(milestone, issue) {      
@@ -113,5 +134,22 @@ function MilestoneCtrl($scope, Milestones, RepoIssues) {
         
         
     }
+};
+
+IssueCtrl.$inject = ['$scope', 'RepoIssues'];
+function IssueCtrl($scope, RepoIssues) {
+      
+    $scope.title = "";
+   
+    $scope.add = function () {
+        var stuff = new RepoIssues({title: $scope.title});
+        stuff.$save({user:$scope.$parent.owner, repo: $scope.$parent.repoName}, function() {
+            $scope.$parent.refreshIssues();
+            $scope.title = "";
+        });
+        
+
+    };
+
 };
 

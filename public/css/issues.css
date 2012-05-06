@@ -5,3 +5,11 @@
 .out {
     background-color: #a6bcce;
 }
+
+.issue {
+    margin: 5px;
+    padding: 5px;
+    background-color: #fff;
+    cursor: move;
+    border: 1px solid #dddddd;
+}
