@@ -20,11 +20,15 @@ function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, I
     $scope.repoName = $routeParams.repoName;
     $scope.owner = $routeParams.owner;
     
+    
     $scope.user = GhUsers.get();
     
     $scope.milestone = "";
     $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName}, function() {
-        if ($scope.milestones.length > 0)  { $scope.milestone = $scope.milestones[0]; }
+    
+        for (var ms in $scope.milestones) {
+            if ($scope.milestones[ms].number == $routeParams.milestone) $scope.milestone = $scope.milestones[ms]; 
+        }
     });
     
     //watch for changes in the milestone

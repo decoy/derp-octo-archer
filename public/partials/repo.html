@@ -43,10 +43,10 @@
         <div class="well" droppable="addIssueToMilestone" ng-model="m" ng-repeat="m in milestones | orderBy: 'due_on' | filter: compare" ng-controller="MilestoneCtrl">
             <div class="row-fluid">
                 
-                <div class="span5"> <h4> {{m.title}} </h4></div>
+                <div class="span6"> <h4> {{m.title}} </h4></div>
                 
-                <div class="span4">{{m.open_issues}} open | {{m.closed_issues}} closed</div>
-                <div class="span3">{{m.due_on | date:short}}</div>
+                <div class="span4">{{m.open_issues}} open | {{m.closed_issues}} closed <br/> {{m.due_on | date:short}}</div>
+                <div class="span2"><a class="btn pull-right" href="#/tasks/{{owner}}/{{repoName}}/{{m.number}}"><i class="icon-check"></i> Tasks</a></div>
             </div>
             <hr/>
 
