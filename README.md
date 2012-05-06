@@ -1,6 +1,6 @@
 #derp-octo-archer
 
-A github issues viewer written with angularjs.
+A github issues viewer written using angularjs, twitter bootstrap, jquery and github.
 
 This project is very much a hack-in-progress.  Please feel free to help make it better!
 
