@@ -63,7 +63,7 @@ function TaskIssueCtrl($scope, RepoIssues, IssueComments, Comment) {
 TaskCtrl.$inject = ['$scope', 'Comment'];
 function TaskCtrl($scope, Comment) {
     //pattern matching for comment types
-    var bettertask = /\[TASK\s([^\s]+)\s\@([^\s]+)\]/
+    var bettertask = /\[TASK[\s]+?(?:([^\s]+)[\s]+)?@?([^\s]+?)\]/
     var taskregex = /\[TASK.*?\]/;
     var assignedregex = /\[ASSIGNED.*?\]/;
     var statusregex = /\[STATUS.*?\]/;
