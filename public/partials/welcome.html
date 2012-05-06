@@ -9,7 +9,7 @@
     </thead>
     <tbody>
         <tr ng-repeat="r in repos | orderBy: ['owner.login', 'name']">
-            <td><img class="thumbnail" src="{{r.owner.avatar_url}}" height="25" /></td>
+            <td><img class="thumbnail" ng-src="{{r.owner.avatar_url}}" height="25" /></td>
             <td><a href="http://github.com/{{r.owner.login}}/{{r.name}}">http://github.com/{{r.owner.login}}/{{r.name}}</a></td>
             <td><a class="btn" href="#/repo/{{r.owner.login}}/{{r.name}}"><i class="icon-calendar"></i> Planner</a></td>
             <td><a class="btn" href="#/tasks/{{r.owner.login}}/{{r.name}}"><i class="icon-check"></i> Tasks</a></td>

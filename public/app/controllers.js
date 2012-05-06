@@ -25,9 +25,11 @@ function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, I
     
     $scope.milestone = "";
     $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName}, function() {
-    
+        
         for (var ms in $scope.milestones) {
-            if ($scope.milestones[ms].number == $routeParams.milestone) $scope.milestone = $scope.milestones[ms]; 
+            if ($routeParams.milestone != null && $scope.milestones[ms].number == $routeParams.milestone) {
+                $scope.milestone = $scope.milestones[ms]; 
+            }
         }
     });
     
