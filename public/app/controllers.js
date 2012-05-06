@@ -7,8 +7,76 @@
 WelcomeController.$inject = ['$scope', '$location', 'UserRepos'];
 function WelcomeController($scope, $location, UserRepos) {
     $scope.apikey = urlParams.token;  //code woo
-    
     $scope.repos = UserRepos.query();
+
+};
+
+
+TasksController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels', 'IssueComments', 'Comment'];
+function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, IssueComments, Comment) {
+    $scope.repoName = $routeParams.repoName;
+    $scope.owner = $routeParams.owner;
+    
+    
+    $scope.milestone = "";
+    $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName}, function() {
+        if ($scope.milestones.length > 0)  { $scope.milestone = $scope.milestones[0]; }
+    });
+    
+    //watch for changes in the milestone
+    $scope.$watch('milestone', function(newValue, oldValue) { 
+        $scope.refreshIssues();
+    });
+   
+    $scope.refreshIssues = function() {
+        //no milestone selected
+        if ($scope.milestone == null || $scope.milestone == '') {
+            $scope.issues = null;
+            return;
+        }
+        
+        //refresh the milestone
+        $scope.issues = RepoIssues.query({user:$scope.owner, repo: $scope.repoName, milestone: $scope.milestone.number});
+    };
+    
+    $scope.getIssueComments = function(issue) {
+        alert(issue.number);
+        //return IssueComments.query({user:$scope.owner, repo: $scope.repoName, number: issue.number});
+    };
+};
+
+TaskIssueCtrl.$inject = ['$scope', 'RepoIssues', 'IssueComments', 'Comment'];
+function TaskIssueCtrl($scope, RepoIssues, IssueComments, Comment) {
+    var self = this;
+    
+    $scope.comments;
+
+    self.refreshIssueComments = function(issue) {
+        $scope.comments = IssueComments.query({user:$scope.owner, repo: $scope.repoName, number: issue.number});
+    };
+    
+    self.refreshIssueComments($scope.i);
+};
+
+
+
+TaskCtrl.$inject = ['$scope', 'Comment'];
+function TaskCtrl($scope, Comment) {
+    //pattern matching for comment types
+    var bettertask = /\[TASK\s([^\s]+)\s\@([^\s]+)\]/
+    var taskregex = /\[TASK.*?\]/;
+    var assignedregex = /\[ASSIGNED.*?\]/;
+    var statusregex = /\[STATUS.*?\]/;
+    
+    var matches = $scope.c.body.match(bettertask);
+    
+    $scope.isTask = matches.length >= 1;
+    
+    $scope.assigned = matches[2];
+    
+    $scope.status = matches[1];
+    
+    $scope.text = $scope.c.body.replace(matches[0], '');
 
 };
 

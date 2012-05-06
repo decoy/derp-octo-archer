@@ -8,10 +8,19 @@ app.directive('issue', function() {
 
 });
 
+app.directive('task', function() {
+    return {
+        restrict: 'E',
+        templateUrl: 'partials/task_template.html',
+        replace: true
+    };
+});
+
 app.directive('draggable', function() {
     return {
         link: function(scope, element, attrs) {
-           $(element).draggable({
+            $(element).addClass('draggable');
+            $(element).draggable({
                 revert: true
             });
         }
@@ -22,7 +31,7 @@ app.directive('draggable', function() {
 app.directive('droppable', function() {
     return {
         link: function(scope, element, attrs) {
-            
+           
            $(element).droppable({
                tolerance: 'pointer',
                 over: function() {

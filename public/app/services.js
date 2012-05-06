@@ -45,4 +45,26 @@ var Labels = function($resource) {
 app.factory('Labels', ['$resource', Labels]);
 
 
+//git hub comments
+var IssueComments = function($resource) {
+    return $resource(
+        'https://api.github.com/repos/:user/:repo/issues/:number/comments',
+        { access_token: api_token },
+        {
+        }
+    );
+};
+app.factory('IssueComments', ['$resource', IssueComments]);
+
+var Comment = function($resource) {
+    return $resource(
+        'https://api.github.com/repos/:user/:repo/issues/comments/:id',
+        { access_token: api_token },
+        {
+        }
+    );
+};
+app.factory('Comment', ['$resource', Comment]);
+
+
 

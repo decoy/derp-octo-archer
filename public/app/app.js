@@ -22,6 +22,11 @@ var app = angular.module('app', ['ngResource'], function($routeProvider) {
     controller : RepoController  
   });
   
+  $routeProvider.when('/tasks/:owner/:repoName', {
+    template   : 'partials/tasks.html',
+    controller : TasksController  
+  });
+  
   $routeProvider.when('/', {
     template   : 'partials/welcome.html',
     controller : WelcomeController  

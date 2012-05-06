@@ -1,0 +1,38 @@
+<div class="row-fluid">
+    <div class="span10">
+        <h1>Tasks</h1>
+        <h4><a href="http://github.com/{{owner}}/{{repoName}}">http://github.com/{{owner}}/{{repoName}}</a></h4>
+    </div>
+    <div class="span2"><a class="btn" href="#"><i class="icon-chevron-left"></i> Back to Projects</a></div>
+</div>
+
+<hr/>
+
+<h5>Milestone</h5>
+<select ng-model="milestone" ng-options="m.title for m in milestones">
+    <option value="">-- chose milestone --</option>
+</select>
+
+<hr/>
+
+<div ng-model="i" ng-repeat="i in issues | orderBy: 'number'" ng-controller="TaskIssueCtrl">
+    <h4>{{i.number}} {{i.title}}</h4>
+    
+    <div class="row-fluid">
+        <div class="span4 well">
+            <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK NEW'" draggable ng-controller="TaskCtrl">
+            </task>
+        </div>
+        <div class="span4 well">
+            <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK WORKING'" draggable ng-controller="TaskCtrl">
+            </task>
+        </div>
+        <div class="span4 well">
+            <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK DONE'" draggable ng-controller="TaskCtrl">
+            </task>
+        </div>
+    </div>
+    
+
+
+</div>
