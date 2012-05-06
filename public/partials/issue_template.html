@@ -1,7 +1,9 @@
 <div class="well issue ">
+    
     <div class="row-fluid">
         <div class="span1"><a href="{{i.html_url}}">#{{i.number}}</a></div>
-        <div class="span9"> <b>{{i.title}}</b></div>
+        <div class="span9"> <b>{{i.title}}</b> <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.labels | orderBy: 'color'">{{l.name}}</span></div>
         <div class="span1">[{{i.state}}]</div>
     </div>
+    
 </div>
