@@ -45,7 +45,7 @@ app.directive('droppable', function() {
                     var test = ui.draggable.scope().$eval(ui.draggable.attr('ng-model'));
                     var bob = scope.$eval(attrs.droppable);
                     var lkdf = scope.$eval(attrs.ngModel);
-                    bob(lkdf, test);
+                    bob(test);
 
                     $(this).removeClass('over');
                 }

@@ -12,6 +12,9 @@ function WelcomeController($scope, $location, UserRepos) {
 };
 
 
+//regex to match [TASK STATUS @USER]
+var bettertask = /\[TASK[\s]+?(?:([^\s]+)[\s]+)?@?([^\s]+?)\]/;
+
 TasksController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels', 'IssueComments', 'Comment'];
 function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, IssueComments, Comment) {
     $scope.repoName = $routeParams.repoName;
@@ -56,18 +59,36 @@ function TaskIssueCtrl($scope, RepoIssues, IssueComments, Comment) {
     };
     
     self.refreshIssueComments($scope.i);
+    
+    $scope.taskWorking = function(task) {
+        self.setTaskStatus(task, 'WORKING');
+    };
+    
+    $scope.taskNew = function(task) {
+        self.setTaskStatus(task, 'NEW');
+    };
+    
+    $scope.taskDone = function(task) {
+        self.setTaskStatus(task, 'DONE');
+    };
+    
+    self.setTaskStatus = function(task, status) {
+        var matches = task.body.match(bettertask);
+        var body = task.body.replace(bettertask, '');
+        body = "[TASK " + status + " @" + $scope.owner + "] " + body.trim();
+        var newTask = new Comment({body: body});
+        newTask.$save({user:$scope.owner, repo: $scope.repoName, id: task.id}, function() {
+            //if successfull, update the existing task body
+            task.body = body;
+            //self.refreshIssueComments($scope.i);
+        });
+
+    };
 };
-
-
 
 TaskCtrl.$inject = ['$scope', 'Comment'];
 function TaskCtrl($scope, Comment) {
-    //pattern matching for comment types
-    var bettertask = /\[TASK[\s]+?(?:([^\s]+)[\s]+)?@?([^\s]+?)\]/
-    var taskregex = /\[TASK.*?\]/;
-    var assignedregex = /\[ASSIGNED.*?\]/;
-    var statusregex = /\[STATUS.*?\]/;
-    
+    //pattern matching for comment types    
     var matches = $scope.c.body.match(bettertask);
     
     $scope.isTask = matches.length >= 1;
@@ -121,7 +142,7 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
         return false;
     };
     
-    $scope.removeIssueMilestone = function(milestone, issue) {      
+    $scope.removeIssueMilestone = function(issue) {      
        
         //already belongs to milestone
         if (issue.milestone ==null) return;
@@ -184,9 +205,9 @@ function MilestoneCtrl($scope, Milestones, RepoIssues) {
 
     };
         
-    $scope.addIssueToMilestone = function(milestone, issue) {      
+    $scope.addIssueToMilestone = function(issue) {      
         //var data = { milestone: milestone.id };
-        
+        var milestone = $scope.m;
         //already belongs to milestone
         if (issue.milestone !=null && issue.milestone.number == milestone.number) return;
         

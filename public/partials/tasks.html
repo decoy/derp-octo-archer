@@ -19,15 +19,15 @@
     <h4>{{i.number}} {{i.title}}</h4>
     
     <div class="row-fluid">
-        <div class="span4 well">
+        <div class="span4 well" droppable="taskNew">
             <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK NEW'" draggable ng-controller="TaskCtrl">
             </task>
         </div>
-        <div class="span4 well">
+        <div class="span4 well" droppable="taskWorking">
             <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK WORKING'" draggable ng-controller="TaskCtrl">
             </task>
         </div>
-        <div class="span4 well">
+        <div class="span4 well" droppable="taskDone">
             <task ng-model="c" ng-repeat="c in comments | orderBy: 'updated_at' | filter: '[TASK DONE'" draggable ng-controller="TaskCtrl">
             </task>
         </div>
