@@ -24,7 +24,9 @@ Drag and drop stories/issues into milestones.
 
 ###Tasks
 
-Create tasks attached to stories/issues and drag and drop them through statuses
+Create tasks attached to stories/issues and drag and drop them through statuses.
+
+Tasks are made from github issue comments using the syntax [TASK STATUS @ASSIGNEE].  Valid statuses are NEW, WORKING, DONE.
 
 
 ## Copyright
