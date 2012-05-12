@@ -253,9 +253,11 @@ IssueCtrl.$inject = ['$scope', 'RepoIssues'];
 function IssueCtrl($scope, RepoIssues) {
       
     $scope.title = "";
+    
+    $scope.selectedLabel;
    
     $scope.add = function () {
-        var stuff = new RepoIssues({title: $scope.title});
+        var stuff = new RepoIssues({title: $scope.title, labels: [ $scope.selectedLabel.name ]});
         stuff.$save({user:$scope.$parent.owner, repo: $scope.$parent.repoName}, function() {
             $scope.$parent.refreshIssues();
             $scope.title = "";
