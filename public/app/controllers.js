@@ -13,7 +13,8 @@ function WelcomeController($scope, $location, UserRepos) {
 
 
 //regex to match [TASK STATUS @USER]
-var bettertask = /\[TASK[\s]+?(?:([^\s]+)[\s]+)?@?([^\s]+?)\]/;
+//var bettertask = /\[TASK[\s]+?(?:([^\s]+)[\s]+)?@?([^\s]+?)\]/;
+var bettertask = /\[TASK[\s+]?(?:([^\s^@]+)?[\s+]?)?(?:@([\S]+))?\]/;
 
 TasksController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels', 'IssueComments', 'Comment', 'GhUsers'];
 function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, IssueComments, Comment, GhUsers) {
