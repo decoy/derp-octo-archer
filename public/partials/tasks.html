@@ -9,12 +9,13 @@
 <hr/>
 
 <div class="row-fluid">
-    <div class="span10">
+    <div class="span6">
         <h5>Milestone</h5>
         <select ng-model="milestone" ng-options="m.title for m in milestones">
             <option value="">-- chose milestone --</option>
         </select>
     </div>
+    <div class="span4"><span ng-show="milestone">{{milestone.open_issues}} open | {{milestone.closed_issues}} closed <br/> {{milestone.due_on | date:short}}</span></div>
     <div class="span2"><a class="btn pull-right" href="#/repo/{{owner}}/{{repoName}}"><i class="icon-calendar"></i> Planner</a></div>
 </div>
 
@@ -23,9 +24,9 @@
 
 <div class="" ng-model="i" ng-repeat="i in issues | orderBy: 'number'" ng-controller="TaskIssueCtrl">
 
-    <div class="row-fluid task-issuebox">
+    <div class="row-fluid task-issuebox" ng-controller="IssueCtrl">
         <div class="span11"><h3 class=""><a href="{{i.html_url}}">#{{i.number}}</a> {{i.title}} <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.labels | orderBy: 'color'">{{l.name}}</span></h4> </div>
-        <div class="span1">[{{i.state}}]</div>
+        <div class="span1"><button class="btn" ng-show="i.state == 'open'" ng-click="close()">Close</button> <button class="btn" ng-show="i.state == 'closed'" ng-click="reopen()">ReOpen</button></div>
     </div>
     
 
@@ -65,8 +66,9 @@
             </task>
             </div>
         </div>
-        
+ 
     </div>
-<hr/>
+    
+       <hr/>
 
 </div>

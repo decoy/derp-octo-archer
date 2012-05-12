@@ -181,9 +181,7 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
         data.$save({user:$scope.owner, repo: $scope.repoName, number: issue.number}, function(){
             issue.$get({user:$scope.owner, repo: $scope.repoName, number: issue.number});
         });
-        
-        
-        
+
     }
     
     this.refreshLabels = function() {
@@ -265,6 +263,19 @@ function IssueCtrl($scope, RepoIssues) {
         
 
     };
-
+    
+    $scope.close = function() {
+        var closeIssue = new RepoIssues({state: 'closed'});
+        closeIssue.$update({user:$scope.$parent.owner, repo: $scope.$parent.repoName, number: $scope.i.number}, function () {
+            $scope.i.state = 'closed';
+        });
+    };
+    
+    $scope.reopen = function() {
+        var closeIssue = new RepoIssues({state: 'open'});
+        closeIssue.$update({user:$scope.$parent.owner, repo: $scope.$parent.repoName, number: $scope.i.number}, function () {
+            $scope.i.state = 'open';
+        });
+    };
 };
 

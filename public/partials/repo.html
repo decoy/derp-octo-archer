@@ -3,7 +3,7 @@
         <h1>Planner</h1>
         <h4><a href="http://github.com/{{owner}}/{{repoName}}">http://github.com/{{owner}}/{{repoName}}</a></h4>
     </div>
-    <div class="span2"><a class="btn" href="#"><i class="icon-chevron-left"></i> Back to Projects</a></div>
+    <div class="span2"><a class="btn pull-right" href="#"><i class="icon-chevron-left"></i> Back to Projects</a></div>
 </div>
 
 <hr/>
@@ -27,11 +27,9 @@
                 <div class="span8 "><input type="text" class="search-query pull-right" ng-model="backlogFilter" placeholder="filter" /> </div>
             </div>
             
-            
             <hr/>
-            
                                
-            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter:filterBacklog ">
+            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter:filterBacklog " ng-controller="IssueCtrl">
             </issue>
         </div>
         
@@ -51,7 +49,7 @@
             <hr/>
 
             
-            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: { milestone.number : m.number }">
+            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: { milestone.number : m.number }" ng-controller="IssueCtrl">
             <issue>
         </div>
         

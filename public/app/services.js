@@ -14,7 +14,9 @@ var RepoIssues = function($resource) {
     return $resource(
         'https://api.github.com/repos/:user/:repo/issues/:number',
         { access_token: api_token },
-        {        }
+        {        
+            'update':   {method:'PATCH'},
+        }
     );
 };
 app.factory('RepoIssues', ['$resource', RepoIssues]);
