@@ -16,7 +16,7 @@
             
             <h5>Add Issue</h5>
             <input type="text" ng-model="title" placeholder="issue title"> <br/>
-            <select  ng-model="selectedLabel" ng-options="l.name for l in labels.labels" placeholder="issue label">
+            <select  ng-model="selectedLabel" ng-options="l.name for l in labels.labels | orderBy : 'name'" placeholder="issue label">
                 <option value="">-Choose a Label-</option>
             </select>
             <select class="input-small" ng-model="selectedEstimate" ng-options="l.friendlyName for l in labels.estimates" placeholder="issue estimate">

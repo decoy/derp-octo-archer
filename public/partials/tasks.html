@@ -11,7 +11,7 @@
 <div class="row-fluid">
     <div class="span6">
         <h5>Milestone</h5>
-        <select ng-model="milestone" ng-options="m.title for m in milestones">
+        <select ng-model="milestone" ng-options="m.title for m in milestones | orderBy : 'due_on'">
             <option value="">-- chose milestone --</option>
         </select>
     </div>
