@@ -2,6 +2,40 @@
 /* App Controllers */
 
 
+//quick sorter for different types of labels... there has got to be a better way to handle this...
+function SplitLabels (labels) {
+    var results = {};
+    results.estimates = [];
+    results.labels = [];
+    results.statuses = [];
+    
+    //sort our labels prior to doing anything with them for now...
+    labels.sort(function(a, b) {
+        var nameA=a.name.toLowerCase(), nameB=b.name.toLowerCase()
+        if (nameA < nameB) return -1 
+        if (nameA > nameB) return 1
+        return 0 //default return value (no sorting)
+    });
+
+    //sort the labels into the different buckets
+    for (var x in labels) {
+        var l = labels[x];
+        
+        if (l.name.slice(0, 3).toLowerCase() == "est") {
+            l.friendlyName = l.name.slice(4).trim();
+            results.estimates.push(l);
+            
+        } else if (l.name.slice(0, 6).toLowerCase() == "status") {
+            l.friendlyName = l.name.slice(7).trim();
+            results.statuses.push(l);
+            
+        } else {
+            results.labels.push(l);
+        }
+    }
+    
+    return results;
+}
 
 
 WelcomeController.$inject = ['$scope', '$location', 'UserRepos'];
@@ -131,9 +165,10 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
     $scope.repoName = $routeParams.repoName;
     $scope.owner = $routeParams.owner;
     
-    $scope.issues = RepoIssues.query({user:$scope.owner, repo: $scope.repoName});
-    
     $scope.backlogFilter = '';
+    
+    //various types of labels
+    //$scope.labels = [];
     
     $scope.filterBacklog = function(issue) {
        if ((issue == null || issue.milestone == null) && issue.title.toLowerCase().indexOf($scope.backlogFilter.toLowerCase()) >= 0) return true;
@@ -186,11 +221,15 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
     }
     
     this.refreshLabels = function() {
-        $scope.labels = Labels.query({user:$scope.owner, repo: $scope.repoName});
+        var allLabels = Labels.query({user:$scope.owner, repo: $scope.repoName}, function() {
+            $scope.labels = SplitLabels(allLabels);
+        });
+        
+       
     };
     
     $scope.refreshMilestones();
-    
+    $scope.refreshIssues();
     self.refreshLabels();
     
     
@@ -256,9 +295,13 @@ function IssueCtrl($scope, RepoIssues) {
     $scope.title = "";
     
     $scope.selectedLabel;
+    $scope.selectedEstimate;
    
     $scope.add = function () {
-        var stuff = new RepoIssues({title: $scope.title, labels: [ $scope.selectedLabel.name ]});
+        var selectedLabels = [];
+        if ($scope.selectedLabel) { selectedLabels.push($scope.selectedLabel.name); }
+        if ($scope.selectedEstimate) { selectedLabels.push($scope.selectedEstimate.name); }
+        var stuff = new RepoIssues({title: $scope.title, labels: selectedLabels});
         stuff.$save({user:$scope.$parent.owner, repo: $scope.$parent.repoName}, function() {
             $scope.$parent.refreshIssues();
             $scope.title = "";
@@ -280,5 +323,11 @@ function IssueCtrl($scope, RepoIssues) {
             $scope.i.state = 'open';
         });
     };
+    
+    if ($scope.i) {
+        $scope.labels = SplitLabels($scope.i.labels);
+        $scope.estimate = $scope.labels.estimates[0];
+        $scope.status = $scope.labels.statuses[0];
+    }
 };
 
