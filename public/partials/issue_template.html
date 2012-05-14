@@ -2,9 +2,31 @@
     
     <div class="row-fluid">
         <div class="span1"><a href="{{i.html_url}}">#{{i.number}}</a></div>
-        <div class="span8"> <b>{{i.title}}</b> <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in labels.labels | orderBy: 'color'">{{l.name}}</span></div>
+        <div class="span8"><h4 class="inline">{{i.title}}</h4> <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in labels.labels | orderBy: 'color'">{{l.name}}</span></div>
         <div class="span1"><b style="color: #{{estimate.color}}">{{estimate.friendlyName}}</b></div>
-        <div class="span1"><button class="btn" ng-show="i.state == 'open'" ng-click="close()">Close</button> <button class="btn" ng-show="i.state == 'closed'" ng-click="reopen()">ReOpen</button></div>
+        <div class="span2"><button class="btn btn-mini pull-right" ng-click="showDetails=!showDetails"><i ng-show="!showDetails" class="icon-chevron-down"></i><i ng-show="showDetails" class="icon-chevron-up"></i></button></div>
+    </div>    
+    
+    <div ng-show="showDetails">
+ 
+        <div class="well">
+            <div class="row-fluid">
+                <div class="span12"><img class="thumbnail inline" ng-src="{{i.user.avatar_url}}" height="25" alt="{{i.user.login}}"/> <b>{{i.user.login}}</b> created this issue on <b>{{i.created_at | date:short}}</b>.</div>
+            </div>
+            <div class="row-fluid" ng-show="i.assignee">
+                <div class="span12"><img class="thumbnail inline" ng-src="{{i.assignee.avatar_url}}" height="25" alt="{{i.assignee.login}}"/> <b>{{i.assignee.login}}</b> is assigned.</div>
+            </div>
+            <div class="row-fluid" ng-show="i.body">
+                <hr/>
+                <div class="span12" >{{i.body}}</div>
+            </div>
+            
+
+        </div>
+        
+        <button class="btn" ng-show="i.state == 'open'" ng-click="close()">Close</button> <button class="btn" ng-show="i.state == 'closed'" ng-click="reopen()">ReOpen</button>
+        
+        <div class="pull-right" ng-show="i.updated_at">Last updated {{i.updated_at | date:short}}</div>
     </div>
     
 </div>
