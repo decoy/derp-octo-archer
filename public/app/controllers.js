@@ -38,10 +38,10 @@ function SplitLabels (labels) {
 }
 
 
-WelcomeController.$inject = ['$scope', '$location', 'UserRepos'];
-function WelcomeController($scope, $location, UserRepos) {
+//WelcomeController.$inject = ['$scope', '$location', 'Repository'];
+function WelcomeController($scope, $location, Repository) {
     $scope.apikey = urlParams.token;  //code woo
-    $scope.repos = UserRepos.query();
+    $scope.repos = Repository.query();
 
 };
 
@@ -50,16 +50,16 @@ function WelcomeController($scope, $location, UserRepos) {
 //var bettertask = /\[TASK[\s]+?(?:([^\s]+)[\s]+)?@?([^\s]+?)\]/;
 var bettertask = /\[TASK[\s+]?(?:([^\s^@]+)?[\s+]?)?(?:@([\S]+))?\]/;
 
-TasksController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels', 'IssueComments', 'Comment', 'GhUsers'];
-function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, IssueComments, Comment, GhUsers) {
+//TasksController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels', 'IssueComments', 'Comment', 'GhUsers'];
+function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueComments, Comment, LoggedInUser) {
     $scope.repoName = $routeParams.repoName;
     $scope.owner = $routeParams.owner;
     
     
-    $scope.user = GhUsers.get();
+    $scope.user = LoggedInUser.get();
     
     $scope.milestone = "";
-    $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName}, function() {
+    $scope.milestones = Milestone.query({user:$scope.owner, repo: $scope.repoName}, function() {
         
         for (var ms in $scope.milestones) {
             if ($routeParams.milestone != null && $scope.milestones[ms].number == $routeParams.milestone) {
@@ -81,7 +81,7 @@ function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, I
         }
         
         //refresh the milestone
-        $scope.issues = RepoIssues.query({user:$scope.owner, repo: $scope.repoName, milestone: $scope.milestone.number});
+        $scope.issues = Issue.query({user:$scope.owner, repo: $scope.repoName, milestone: $scope.milestone.number});
     };
     
     $scope.getIssueComments = function(issue) {
@@ -90,8 +90,8 @@ function TasksController($scope, $routeParams, RepoIssues, Milestones, Labels, I
     };
 };
 
-TaskIssueCtrl.$inject = ['$scope', 'RepoIssues', 'IssueComments', 'Comment'];
-function TaskIssueCtrl($scope, RepoIssues, IssueComments, Comment) {
+//TaskIssueCtrl.$inject = ['$scope', 'RepoIssues', 'IssueComments', 'Comment'];
+function TaskIssueCtrl($scope, Issue, IssueComments, Comment) {
     var self = this;
     
     $scope.description = '';
@@ -142,7 +142,7 @@ function TaskIssueCtrl($scope, RepoIssues, IssueComments, Comment) {
     };
 };
 
-TaskCtrl.$inject = ['$scope', 'Comment'];
+//TaskCtrl.$inject = ['$scope', 'Comment'];
 function TaskCtrl($scope, Comment) {
     //pattern matching for comment types    
     var matches = $scope.c.body.match(bettertask);
@@ -158,8 +158,8 @@ function TaskCtrl($scope, Comment) {
 };
 
 
-RepoController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels'];
-function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
+//RepoController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels'];
+function RepoController($scope, $routeParams, Issue, Milestone, Label) {
     var self = this;
     
     $scope.repoName = $routeParams.repoName;
@@ -175,11 +175,11 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
     };
     
     $scope.refreshMilestones = function() {
-        $scope.milestones = Milestones.query({user:$scope.owner, repo: $scope.repoName});
+        $scope.milestones = Milestone.query({user:$scope.owner, repo: $scope.repoName});
     };
     
     $scope.refreshIssues = function() {
-        $scope.issues = RepoIssues.query({user:$scope.owner, repo: $scope.repoName});
+        $scope.issues = Issue.query({user:$scope.owner, repo: $scope.repoName});
     };
 
     $scope.saveLabel = function(label) {
@@ -210,7 +210,7 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
         if (issue.milestone ==null) return;
         
         //create a new object with only the milestone set
-        var data = new RepoIssues;
+        var data = new Issue;
         data.milestone = null; 
         
         //save the new issue to the number (patches), then refresh the issue
@@ -221,7 +221,7 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
     }
     
     this.refreshLabels = function() {
-        var allLabels = Labels.query({user:$scope.owner, repo: $scope.repoName}, function() {
+        var allLabels = Label.query({user:$scope.owner, repo: $scope.repoName}, function() {
             $scope.labels = SplitLabels(allLabels);
         });
         
@@ -235,21 +235,21 @@ function RepoController($scope, $routeParams, RepoIssues, Milestones, Labels) {
     
 };
 
-LabelCtrl.$inject = ['$scope', 'Labels'];
-function LabelCtrl($scope, Labels) {
+//LabelCtrl.$inject = ['$scope', 'Labels'];
+function LabelCtrl($scope, Label) {
     $scope.name = "";
     $scope.color = "";
     
     $scope.addLabel = function() {
-        var newLabel = new Labels({name: $scope.name, color: $scope.color});
+        var newLabel = new Label({name: $scope.name, color: $scope.color});
         newLabel.$save({user:$scope.$parent.owner, repo: $scope.$parent.repoName});
         $scope.parent.refreshLabels();
     }
 };
 
 
-MilestoneCtrl.$inject = ['$scope', 'Milestones', 'RepoIssues'];
-function MilestoneCtrl($scope, Milestones, RepoIssues) {
+//MilestoneCtrl.$inject = ['$scope', 'Milestones', 'RepoIssues'];
+function MilestoneCtrl($scope, Milestone, Issue) {
       
     $scope.title = "";
     $scope.dueon = "";
@@ -276,7 +276,7 @@ function MilestoneCtrl($scope, Milestones, RepoIssues) {
         if (issue.milestone !=null && issue.milestone.number == milestone.number) return;
         
         //create a new object with only the milestone set
-        var data = new RepoIssues;
+        var data = new Issue;
         data.milestone = milestone.number; 
         
         //save the new issue to the number (patches), then refresh the issue
@@ -289,8 +289,8 @@ function MilestoneCtrl($scope, Milestones, RepoIssues) {
     }
 };
 
-IssueCtrl.$inject = ['$scope', 'RepoIssues'];
-function IssueCtrl($scope, RepoIssues) {
+//IssueCtrl.$inject = ['$scope', 'RepoIssues'];
+function IssueCtrl($scope, Issue) {
       
     $scope.title = "";
     
@@ -301,7 +301,7 @@ function IssueCtrl($scope, RepoIssues) {
         var selectedLabels = [];
         if ($scope.selectedLabel) { selectedLabels.push($scope.selectedLabel.name); }
         if ($scope.selectedEstimate) { selectedLabels.push($scope.selectedEstimate.name); }
-        var stuff = new RepoIssues({title: $scope.title, labels: selectedLabels});
+        var stuff = new Issue({title: $scope.title, labels: selectedLabels});
         stuff.$save({user:$scope.$parent.owner, repo: $scope.$parent.repoName}, function() {
             $scope.$parent.refreshIssues();
             $scope.title = "";
@@ -311,14 +311,14 @@ function IssueCtrl($scope, RepoIssues) {
     };
     
     $scope.close = function() {
-        var closeIssue = new RepoIssues({state: 'closed'});
+        var closeIssue = new Issue({state: 'closed'});
         closeIssue.$update({user:$scope.$parent.owner, repo: $scope.$parent.repoName, number: $scope.i.number}, function () {
             $scope.i.state = 'closed';
         });
     };
     
     $scope.reopen = function() {
-        var closeIssue = new RepoIssues({state: 'open'});
+        var closeIssue = new Issue({state: 'open'});
         closeIssue.$update({user:$scope.$parent.owner, repo: $scope.$parent.repoName, number: $scope.i.number}, function () {
             $scope.i.state = 'open';
         });
