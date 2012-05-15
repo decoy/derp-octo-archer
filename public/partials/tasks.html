@@ -27,7 +27,7 @@
     <div class="row-fluid task-issuebox" ng-controller="IssueCtrl">
         <div class="span10"><h3 class=""><a href="{{i.html_url}}">#{{i.number}}</a> {{i.title}} <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in labels.labels | orderBy: 'color'">{{l.name}}</span></h4> </div>
         <div class="span1">{{estimate.friendlyName}}</div>
-        <div class="span1"><button class="btn" ng-show="i.state == 'open'" ng-click="close()">Close</button> <button class="btn" ng-show="i.state == 'closed'" ng-click="reopen()">ReOpen</button></div>
+        <div class="span1"><button class="btn" ng-show="i.state == 'open'" ng-click="i.setState('closed',{user:owner, repo: repoName});">Close</button> <button class="btn" ng-show="i.state == 'closed'" ng-click="i.setState('open',{user:owner, repo: repoName});">ReOpen</button></div>
     </div>
     
 

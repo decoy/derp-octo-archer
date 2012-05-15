@@ -179,7 +179,13 @@ function RepoController($scope, $routeParams, Issue, Milestone, Label) {
     };
     
     $scope.refreshIssues = function() {
-        $scope.issues = Issue.query({user:$scope.owner, repo: $scope.repoName});
+        //$scope.issues = Issue.query({user:$scope.owner, repo: $scope.repoName});
+        $scope.issues = Issue.query({user:$scope.owner, repo: $scope.repoName}, function (data){
+            angular.forEach(data, function(value, key) {
+                value.parseLabels();
+                //data.parseLabels();
+            });
+        });
     };
 
     $scope.saveLabel = function(label) {
@@ -309,25 +315,5 @@ function IssueCtrl($scope, Issue) {
         
 
     };
-    
-    $scope.close = function() {
-        var closeIssue = new Issue({state: 'closed'});
-        closeIssue.$update({user:$scope.$parent.owner, repo: $scope.$parent.repoName, number: $scope.i.number}, function () {
-            $scope.i.state = 'closed';
-        });
-    };
-    
-    $scope.reopen = function() {
-        var closeIssue = new Issue({state: 'open'});
-        closeIssue.$update({user:$scope.$parent.owner, repo: $scope.$parent.repoName, number: $scope.i.number}, function () {
-            $scope.i.state = 'open';
-        });
-    };
-    
-    if ($scope.i) {
-        $scope.labels = SplitLabels($scope.i.labels);
-        $scope.estimate = $scope.labels.estimates[0];
-        $scope.status = $scope.labels.statuses[0];
-    }
 };
 

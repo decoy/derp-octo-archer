@@ -1,6 +1,6 @@
 
 //default app module
-var app = angular.module('app', ['ngResource', 'github.service.v3'], function($routeProvider) {
+var app = angular.module('derpoa', ['ngResource', 'github.service.v3', 'derpoa.directive'], function($routeProvider) {
 
   $routeProvider.when('/repo/:owner/:repoName', {
     template   : 'partials/repo.html',
