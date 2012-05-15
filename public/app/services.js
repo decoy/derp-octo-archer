@@ -1,4 +1,4 @@
-//TODO move to the module startup
+//TODO move to a module or something...
 //get the URL paremeters on startup
 var urlParams = {};
 (function () {
@@ -16,9 +16,11 @@ var api_token = urlParams.token;
 
 var bettertask = /\[TASK[\s+]?(?:([^\s^@]+)?[\s+]?)?(?:@([\S]+))?\]/;
 
+
 //this is a simple service module for the github API v3
 angular.module('github.service.v3', ['ngResource'])
 
+    //the repository...
     .factory('Repository', function($resource) {
         var Repository = $resource(
             'https://api.github.com/user/repos',
@@ -33,18 +35,30 @@ angular.module('github.service.v3', ['ngResource'])
     //The issue factory has a lot going on....
     .factory('Issue', function($resource, IssueComments, Comment) {
         var Issue = $resource(
-            'https://api.github.com/repos/:user/:repo/issues/:number',
-            { access_token: api_token, number:"@number" },
+            'https://api.github.com/repos/:owner/:repo/issues/:number',
+            { access_token: api_token, repo: "@repo", owner: "@owner", number:"@number" },
             {
                 'update':   {method:'PATCH'},
             }
         );
         
+        //wrapper for querying for issues and adding our specific values
+        Issue.getIssues = function(args, cb, err) {
+            return Issue.query(args, function(data) {
+                angular.forEach(data, function(value, key) {
+                    value.owner = args.owner;
+                    value.repo = args.repo;
+                    value.parseLabels();
+                });
+                cb && cb(data);
+            }, err);
+        };
+        
         //set the closed/open state
-        Issue.prototype.setState = function(state, args, cb) {
+        Issue.prototype.setState = function(state, cb) {
             var self = this;
-            var i = new Issue({state: state, number: this.number});
-            i.$save(args, function(data) {
+            var i = new Issue({state: state, number: this.number, repo: this.repo, owner: this.owner});
+            i.$save(function(data) {
                 self.state = state;
             });
         };
@@ -52,7 +66,12 @@ angular.module('github.service.v3', ['ngResource'])
         //fill the comments and tasks
         Issue.prototype.getComments = function(args, cb) {
             var self = this;
+            if (!args) args = {};
             args.number = this.number;
+            args.owner = this.owner;
+            args.repo = this.repo;
+            
+            //if (!this.comments || this.comment_details) return; //already gotten.
             
             IssueComments.query(args, function(data){
                 self.comment_details = [];
@@ -109,9 +128,10 @@ angular.module('github.service.v3', ['ngResource'])
         return Issue;
     })
     
+    //issues belong to milestones... woo....
     .factory('Milestone', function($resource) {
         var Milestone = $resource(
-            'https://api.github.com/repos/:user/:repo/milestones/:number',
+            'https://api.github.com/repos/:owner/:repo/milestones/:number',
             { access_token: api_token },
             {
                 'update':   {method:'PATCH'},
@@ -121,9 +141,10 @@ angular.module('github.service.v3', ['ngResource'])
         return Milestone;
     })
     
+    //labels are multi purpose around here...
     .factory('Label', function($resource) {
         var Label = $resource(
-            'https://api.github.com/repos/:user/:repo/labels/:name',
+            'https://api.github.com/repos/:owner/:repo/labels/:name',
             { access_token: api_token },
             {
                 'save':   {method:'POST'},
@@ -133,9 +154,10 @@ angular.module('github.service.v3', ['ngResource'])
         return Label;
     })
 
+    //comments are also tasks depending on content...
     .factory('Comment', function($resource) {
         var Comment = $resource(
-            'https://api.github.com/repos/:user/:repo/issues/comments/:id',
+            'https://api.github.com/repos/:owner/:repo/issues/comments/:id',
             { access_token: api_token },
             {
             }
@@ -144,9 +166,10 @@ angular.module('github.service.v3', ['ngResource'])
         return Comment;
     })
     
+    //github isn't very rest like with this one.
     .factory('IssueComments', function($resource) {
         var IssueComments = $resource(
-            'https://api.github.com/repos/:user/:repo/issues/:number/comments',
+            'https://api.github.com/repos/:owner/:repo/issues/:number/comments',
             { access_token: api_token },
             {
             }
@@ -155,6 +178,7 @@ angular.module('github.service.v3', ['ngResource'])
         return IssueComments;
     })
 
+    //quick helper to get the logged in user
     .factory('LoggedInUser', function($resource) {
         var LoggedInUser = $resource(
             'https://api.github.com/user',

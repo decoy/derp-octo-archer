@@ -4,7 +4,7 @@
         <div class="span1"><a href="{{i.html_url}}">#{{i.number}}</a></div>
         <div class="span8"><h4 class="inline">{{i.title}}</h4> <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.tags | orderBy: 'color'">{{l.name}}</span></div>
         <div class="span1"><b style="color: #{{i.estimate.color}}">{{i.estimate.friendlyName}}</b></div>
-        <div class="span2"><button class="btn btn-mini pull-right" ng-click="showDetails=!showDetails;"><i ng-show="!showDetails" class="icon-chevron-down"></i><i ng-show="showDetails" class="icon-chevron-up"></i></button></div>
+        <div class="span2"><button class="btn btn-mini pull-right" ng-click="showDetails=!showDetails; showDetails && i.getComments();"><i ng-show="!showDetails" class="icon-chevron-down"></i><i ng-show="showDetails" class="icon-chevron-up"></i></button></div>
     </div>    
     
     <div ng-show="showDetails">
@@ -28,7 +28,7 @@
                 <br/>
                 <p>{{c.body}}</p>
             </div>
-            <div ng-show="i.task_details">
+            <div ng-show="false">
                 <hr/>
                 <div ng-repeat="t in i.task_details | orderBy: 'created_at'">
                     <span class="pull-right"><a ng-show="t.assigned" href="https://github.com/{{t.assigned}}">@{{t.assigned}}</a></span>
@@ -38,8 +38,8 @@
 
         </div>
         
-        <button class="btn" ng-show="i.state == 'open'" ng-click="i.setState('closed',{user:owner, repo: repoName});">Close</button> <button class="btn" ng-show="i.state == 'closed'" ng-click="i.setState('open',{user:owner, repo: repoName});">ReOpen</button>
-        <button class="btn" ng-show="i.comments" ng-click="i.getComments({user:owner, repo: repoName})">Show Comments</button>
+        <button class="btn" ng-show="i.state == 'open'" ng-click="i.setState('closed');">Close</button> <button class="btn" ng-show="i.state == 'closed'" ng-click="i.setState('open');">ReOpen</button>
+
         <div class="pull-right" ng-show="i.updated_at">Last updated {{i.updated_at | date:short}}</div>
     </div>
     
