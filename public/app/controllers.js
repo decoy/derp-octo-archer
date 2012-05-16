@@ -166,6 +166,8 @@ function RepoController($scope, $routeParams, Issue, Milestone, Label) {
     $scope.owner = $routeParams.owner;
     
     $scope.backlogFilter = '';
+    
+    $scope.showMilestone = true; //start off expanded...
 
     
     $scope.filterBacklog = function(issue) {
@@ -295,18 +297,21 @@ function MilestoneCtrl($scope, Milestone, Issue) {
 function IssueCtrl($scope, Issue) {
       
     $scope.title = "";
+    $scope.description = "";
     
     $scope.selectedLabel;
     $scope.selectedEstimate;
+    
    
     $scope.add = function () {
         var selectedLabels = [];
         if ($scope.selectedLabel) { selectedLabels.push($scope.selectedLabel.name); }
         if ($scope.selectedEstimate) { selectedLabels.push($scope.selectedEstimate.name); }
-        var stuff = new Issue({title: $scope.title, labels: selectedLabels});
+        var stuff = new Issue({title: $scope.title, labels: selectedLabels, body: $scope.description});
         stuff.$save({owner:$scope.$parent.owner, repo: $scope.$parent.repoName}, function() {
             $scope.$parent.refreshIssues();
             $scope.title = "";
+            $scope.description = "";
         });
         
 

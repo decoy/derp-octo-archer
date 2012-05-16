@@ -12,17 +12,41 @@
     
     <div class="span6">
 
-        <form class="well" ng-submit="add()" ng-controller="IssueCtrl">
+        <form class=" well" ng-submit="add()" ng-controller="IssueCtrl">
             
-            <h5>Add Issue</h5>
-            <input type="text" ng-model="title" placeholder="issue title"> <br/>
-            <select  ng-model="selectedLabel" ng-options="l.name for l in labels.labels | orderBy : 'name'" placeholder="issue label">
-                <option value="">-Choose a Label-</option>
-            </select>
-            <select class="input-small" ng-model="selectedEstimate" ng-options="l.friendlyName for l in labels.estimates" placeholder="issue estimate">
-                <option value="">-Estimate-</option>
-            </select>
-            <input type="submit" class="btn btn-primary" value="Create" />
+            <label class="control-label"><h5>Add New Issue</h5></label>
+            <input type="text" class="input-xlarge" ng-model="title" placeholder="Issue Title">
+            
+            <div ng-show="title">
+                <div class="control-group" >
+                    <label class="control-label">Labels</label>
+                    <div class="controls">
+                        <select  ng-model="selectedLabel" ng-options="l.name for l in labels.labels | orderBy : 'name'" placeholder="issue label">
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">Estimate</label>
+                    <div class="controls">
+                        <select class="input-small" ng-model="selectedEstimate" ng-options="l.friendlyName for l in labels.estimates" placeholder="issue estimate">
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">Description</label>
+                    <div class="controls">
+                        <textarea ng-model="description"></textarea>
+                    </div>
+                </div>
+            
+                <hr/>
+                <input type="submit" class="btn btn-primary" value="Create" />
+                <input type="button" class="btn" ng-click="title='';" value="Cancel" />
+                
+            </div>
+                
         </form>
          
         <div class="well" droppable="removeIssueMilestone">
@@ -32,7 +56,7 @@
             </div>
             
             <hr/>
-            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter:filterBacklog ">
+            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter:filterBacklog">
             </issue>
         </div>
         
@@ -43,25 +67,30 @@
     <div class="span6">
         <div class="well" droppable="addIssueToMilestone" ng-model="m" ng-repeat="m in milestones | orderBy: 'due_on' | filter: compare" ng-controller="MilestoneCtrl">
             <div class="row-fluid">
-                
-                <div class="span6"> <h4> {{m.title}} </h4></div>
-                
-                <div class="span4">{{m.open_issues}} open | {{m.closed_issues}} closed <br/> {{m.due_on | date:short}}</div>
+                <div class="span1"><button class="btn btn-mini pull-right" ng-click="showMilestone=!showMilestone;"><i ng-show="!showMilestone" class="icon-chevron-down"></i><i ng-show="showMilestone" class="icon-chevron-up"></i></button></div>
+                <div class="span6"><h4> {{m.title}} </h4>Due on {{m.due_on | date:short}}</div>
+                <div class="span3">{{m.open_issues}} open | {{m.closed_issues}} closed</div>
                 <div class="span2"><a class="btn pull-right" href="#/tasks/{{owner}}/{{repoName}}/{{m.number}}"><i class="icon-check"></i> Tasks</a></div>
             </div>
-            <hr/>
             
-            <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: { milestone.number : m.number }">
-            <issue>
+            
+            <div ng-show="showMilestone">
+                <hr/>
+                <issue draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: { milestone.number : m.number }">
+                </issue>
+            </div>
+            
+
+            
         </div>
         
-       
-         <form class="well form-inline" ng-submit="add()"  ng-controller="MilestoneCtrl">
+        <form class="well form-inline" ng-submit="add()"  ng-controller="MilestoneCtrl">
             <h5>New Milestone</h5>
             <input type="text" ng-model="title" size="30" placeholder="title" />
             <input type="text" ng-model="dueon" size="10" placeholder="due date:  yyyy-mm-dd" />
             <input class="btn btn-primary" type="submit" value="Create" />
         </form>
+        
     </div>
     
 
