@@ -1,7 +1,7 @@
 <div class="well issue">
     
     <div class="row-fluid">
-        <div class="span1"><a href="{{i.html_url}}">#{{i.number}}</a></div>
+        <div class="span1"><a href="{{i.html_url}}"><b>#{{i.number}}</b></a></div>
         <div class="span8"><h4 class="inline">{{i.title}}</h4> <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.tags | orderBy: 'color'">{{l.name}}</span></div>
         <div class="span1"><b style="color: #{{i.estimate.color}}">{{i.estimate.friendlyName}}</b></div>
         <div class="span2"><button class="btn btn-mini pull-right" ng-click="showDetails=!showDetails; showDetails && i.getComments();"><i ng-show="!showDetails" class="icon-chevron-down"></i><i ng-show="showDetails" class="icon-chevron-up"></i></button></div>

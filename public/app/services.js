@@ -14,6 +14,42 @@ var urlParams = {};
 
 var api_token = urlParams.token;
 
+//function to split up labels...
+function parseLabels(labels) {
+
+    var r = {};
+    r.estimates = [];
+    r.tags = [];
+    r.statuses = [];
+    
+    //sort our labels prior to doing anything with them for now...
+    labels.sort(function(a, b) {
+        var nameA=a.name.toLowerCase(), nameB=b.name.toLowerCase()
+        if (nameA < nameB) return -1 
+        if (nameA > nameB) return 1
+        return 0 //default return value (no sorting)
+    });
+
+    //sort the labels into the different buckets
+    angular.forEach(labels, function(l, key) {
+        if (l.name.slice(0, 3).toLowerCase() == "est") {
+            l.friendlyName = l.name.slice(4).trim();
+            r.estimates.push(l);
+            
+        } else if (l.name.slice(0, 6).toLowerCase() == "status") {
+            l.friendlyName = l.name.slice(7).trim();
+            r.statuses.push(l);
+            
+        } else {
+            r.tags.push(l);
+        }
+    
+    });
+    
+    return r;
+};
+
+
 var bettertask = /\[TASK[\s+]?(?:([^\s^@]+)?[\s+]?)?(?:@([\S]+))?\]/;
 
 
@@ -48,7 +84,14 @@ angular.module('github.service.v3', ['ngResource'])
                 angular.forEach(data, function(value, key) {
                     value.owner = args.owner;
                     value.repo = args.repo;
-                    value.parseLabels();
+                    
+                    //deal with the labels...
+                    var r = parseLabels(value.labels);
+                    value.tags = r.tags;
+                    //value.estimates = r.estimates;
+                    //value.statuses = r.statuses;
+                    value.estimate = r.estimates[0];
+                    value.status = r.statuses[0];
                 });
                 cb && cb(data);
             }, err);
@@ -88,43 +131,7 @@ angular.module('github.service.v3', ['ngResource'])
                 });
             });
         };
-        
-        //parse the labels vs statuses vs estimates
-        Issue.prototype.parseLabels = function() {
-            var self = this;
-            this.estimates = [];
-            this.tags = [];
-            this.statuses = [];
-            
-            //sort our labels prior to doing anything with them for now...
-            this.labels.sort(function(a, b) {
-                var nameA=a.name.toLowerCase(), nameB=b.name.toLowerCase()
-                if (nameA < nameB) return -1 
-                if (nameA > nameB) return 1
-                return 0 //default return value (no sorting)
-            });
-
-            //sort the labels into the different buckets
-            angular.forEach(this.labels, function(l, key) {
-                if (l.name.slice(0, 3).toLowerCase() == "est") {
-                    l.friendlyName = l.name.slice(4).trim();
-                    self.estimates.push(l);
-                    
-                } else if (l.name.slice(0, 6).toLowerCase() == "status") {
-                    l.friendlyName = l.name.slice(7).trim();
-                    self.statuses.push(l);
-                    
-                } else {
-                    self.tags.push(l);
-                }
-            
-            });
-            
-            this.estimate = this.estimates[0];
-            this.status = this.statuses[0];
-
-        };
-        
+                
         return Issue;
     })
     
@@ -150,6 +157,18 @@ angular.module('github.service.v3', ['ngResource'])
                 'save':   {method:'POST'},
             }
         );
+        
+        //wrapper for querying for labels and adding our specific values
+        Label.getLabels = function(args, cb, err) {
+            return Label.query(args, function(data) {
+                angular.forEach(data, function(value, key) {
+                    value.owner = args.owner;
+                    value.repo = args.repo;
+                    value.parseLabels();
+                });
+                cb && cb(data);
+            }, err);
+        };
         
         return Label;
     })

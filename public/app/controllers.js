@@ -2,42 +2,6 @@
 /* App Controllers */
 
 
-//quick sorter for different types of labels... there has got to be a better way to handle this...
-function SplitLabels(labels) {
-    var results = {};
-    results.estimates = [];
-    results.labels = [];
-    results.statuses = [];
-
-    //sort our labels prior to doing anything with them for now...
-    labels.sort(function (a, b) {
-        var nameA = a.name.toLowerCase(), nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0 //default return value (no sorting)
-    });
-
-    //sort the labels into the different buckets
-    for (var x in labels) {
-        var l = labels[x];
-
-        if (l.name.slice(0, 3).toLowerCase() == "est") {
-            l.friendlyName = l.name.slice(4).trim();
-            results.estimates.push(l);
-
-        } else if (l.name.slice(0, 6).toLowerCase() == "status") {
-            l.friendlyName = l.name.slice(7).trim();
-            results.statuses.push(l);
-
-        } else {
-            results.labels.push(l);
-        }
-    }
-
-    return results;
-}
-
-
 //WelcomeController.$inject = ['$scope', '$location', 'Repository'];
 function WelcomeController($scope, $location, Repository) {
     $scope.apikey = urlParams.token;  //code woo
@@ -47,27 +11,62 @@ function WelcomeController($scope, $location, Repository) {
 ;
 
 
-//regex to match [TASK STATUS @USER]
-//var bettertask = /\[TASK[\s]+?(?:([^\s]+)[\s]+)?@?([^\s]+?)\]/;
-var bettertask = /\[TASK[\s+]?(?:([^\s^@]+)?[\s+]?)?(?:@([\S]+))?\]/;
-
 //TasksController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels', 'IssueComments', 'Comment', 'GhUsers'];
-function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueComments, Comment, LoggedInUser) {
+function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueComments, LoggedInUser, Comment) {
     $scope.repoName = $routeParams.repoName;
     $scope.owner = $routeParams.owner;
 
 
     $scope.user = LoggedInUser.get();
+    
+    $scope.showIssueTasks = true; //start expanded...
+    
+    $scope.states = ['open', 'working', 'closed'];
 
     $scope.milestone = "";
     $scope.milestones = Milestone.query({owner:$scope.owner, repo:$scope.repoName}, function () {
-
+        
+        //sort the milestones
+        $scope.milestones.sort(function(a, b) {
+            if (a.due_on < b.due_on) return -1 
+            if (a.due_on > b.due_on) return 1
+            return 0 //default return value (no sorting)
+        });
+        
+        //use the first as the default...
+        $scope.milestone = $scope.milestones[0];
+        
+        //see if the route param overrides...
         for (var ms in $scope.milestones) {
             if ($routeParams.milestone != null && $scope.milestones[ms].number == $routeParams.milestone) {
                 $scope.milestone = $scope.milestones[ms];
             }
         }
     });
+    
+    $scope.changeIssueStatus = function(issue, status) {
+        var bob = issue;
+    };
+    
+    $scope.changeTaskStatus = function(task, status) {
+    
+        if (task.status == status) return;  //already set.
+        
+        //set the new body
+        var body = task.body.replace(bettertask, '');
+        body = "[TASK " + status + " @" + $scope.user.login + "] " + body.trim();
+
+        //create the task update object
+        var newTask = new Comment({body:body});
+        newTask.$save({owner:$scope.owner, repo:$scope.repoName, id:task.id}, function (data) {
+            //task = data;
+            //if successful, update the existing task body to avoid re-downloading to re-parse
+            task.body = body;
+            task.status = status;
+            task.assigned = $scope.user.login;
+            //self.refreshIssueComments($scope.i);
+        });
+    };
 
     //watch for changes in the milestone
     $scope.$watch('milestone', function (newValue, oldValue) {
@@ -82,83 +81,47 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
         }
 
         //refresh the milestone
-        $scope.issues = Issue.query({owner:$scope.owner, repo:$scope.repoName, milestone:$scope.milestone.number});
-    };
-
-    $scope.getIssueComments = function (issue) {
-        alert(issue.number);
-        //return IssueComments.query({user:$scope.owner, repo: $scope.repoName, number: issue.number});
-    };
-}
-;
-
-//TaskIssueCtrl.$inject = ['$scope', 'RepoIssues', 'IssueComments', 'Comment'];
-function TaskIssueCtrl($scope, Issue, IssueComments, Comment) {
-    var self = this;
-
-    $scope.description = '';
-
-    $scope.addTask = function () {
-        //create the task update object
-        var newTask = new IssueComments({body:"[TASK NEW] " + $scope.description});
-        newTask.$save({owner:$scope.owner, repo:$scope.repoName, number:$scope.i.number}, function () {
-            self.refreshIssueComments($scope.i);
-            $scope.description = '';
+        Issue.getIssues({owner:$scope.owner, repo:$scope.repoName, milestone:$scope.milestone.number}, function (data) {
+            angular.forEach(data, function(value, key) {
+                value.comments && value.getComments();  //only get comments if the ticket lists some...
+            });
+            $scope.issues = data;
         });
     };
 
-    self.refreshIssueComments = function (issue) {
-        $scope.comments = IssueComments.query({owner:$scope.owner, repo:$scope.repoName, number:issue.number});
-    };
-
-    self.refreshIssueComments($scope.i);
-
-    $scope.taskWorking = function (task) {
-        self.setTaskStatus(task, 'WORKING');
-    };
-
-    $scope.taskNew = function (task) {
-        self.setTaskStatus(task, 'NEW');
-    };
-
-    $scope.taskDone = function (task) {
-        self.setTaskStatus(task, 'DONE');
-    };
-
-    self.setTaskStatus = function (task, status) {
-
-        //set the new body
-        var body = task.body.replace(bettertask, '');
-        body = "[TASK " + status + " @" + $scope.user.login + "] " + body.trim();
-
-        //create the task update object
-        var newTask = new Comment({body:body});
-        newTask.$save({owner:$scope.owner, repo:$scope.repoName, id:task.id}, function () {
-            //if successful, update the existing task body to avoid re-downloading to re-parse
-            task.body = body;
-            //self.refreshIssueComments($scope.i);
-        });
-
+    
+    $scope.filterIssuesWithTasks = function (issue) {
+        if (issue.task_details && issue.task_details.length > 0) return true;
     };
 }
 ;
 
-//TaskCtrl.$inject = ['$scope', 'Comment'];
-function TaskCtrl($scope, Comment) {
-    //pattern matching for comment types    
-    var matches = $scope.c.body.match(bettertask);
+function TaskCtrl($scope, IssueComments) {
 
-    $scope.isTask = matches.length >= 1;
+        $scope.description = '';
+        
+        $scope.addTask = function (issue) {
+        
+            //set the new body
+            var body = "[TASK NEW] " + $scope.description.trim();
 
-    $scope.assigned = matches[2];
-
-    $scope.status = matches[1];
-
-    $scope.text = $scope.c.body.replace(matches[0], '');
-
-}
-;
-
+            //create the task update object
+            var newTask = new IssueComments({body:body});
+            newTask.$save({owner: $scope.owner, repo: $scope.repoName, number: issue.number}, function (data) {
+                //task = data;
+                //if successful, update the existing task body to avoid re-downloading to re-parse
+                //task.body = body;
+                //task.status = status;
+                //task.assignee = $scope.user.login;
+                //self.refreshIssueComments($scope.i);
+                
+                $scope.description = '';
+                issue.getComments(); //refresh
+                
+            });
+        
+        };
+};
 
 //RepoController.$inject = ['$scope', '$routeParams', 'RepoIssues', 'Milestones', 'Labels'];
 function RepoController($scope, $routeParams, Issue, Milestone, Label) {
@@ -224,17 +187,9 @@ function RepoController($scope, $routeParams, Issue, Milestone, Label) {
 
     }
 
-    this.refreshLabels = function () {
-        var allLabels = Label.query({owner:$scope.owner, repo:$scope.repoName}, function () {
-            $scope.labels = SplitLabels(allLabels);
-        });
-
-
-    };
 
     $scope.refreshMilestones();
     $scope.refreshIssues();
-    self.refreshLabels();
 
 
 }

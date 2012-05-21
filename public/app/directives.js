@@ -36,18 +36,14 @@ angular.module('derpoa.directive', [])
                $(element).droppable({
                    tolerance: 'pointer',
                     over: function() {
-                           $(this).addClass('over');
+                            $(this).addClass('over');
                     },
                     out: function() {
                             $(this).removeClass('over');
                     },
                     drop: function(event, ui) {
-                        //var test = ui.draggable.scope();
                         var test = ui.draggable.scope().$eval(ui.draggable.attr('ng-model'));
-                        var bob = scope.$eval(attrs.droppable);
-                        var lkdf = scope.$eval(attrs.ngModel);
-                        bob(test);
-
+                        var bob = scope.$eval(attrs.droppable, {draggable: test, scope: scope});
                         $(this).removeClass('over');
                     }
                 });
