@@ -286,3 +286,7 @@ function IssueCtrl($scope, Issue) {
 }
 ;
 
+
+function ToolsController($scope) {
+
+};
