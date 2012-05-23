@@ -150,6 +150,12 @@ function RepoController($scope, $routeParams, Issue, Milestone, Label) {
             $scope.issues = data;
         });
     };
+    
+    $scope.refreshLabels = function() {
+        Label.getLabels({owner:$scope.owner, repo:$scope.repoName}, function(data) {
+            $scope.labels = data;
+        });
+    };
 
     $scope.saveLabel = function (label) {
         label.$save({owner:$scope.owner, repo:$scope.repoName, name:label.name});
@@ -187,7 +193,7 @@ function RepoController($scope, $routeParams, Issue, Milestone, Label) {
 
     }
 
-
+    $scope.refreshLabels();
     $scope.refreshMilestones();
     $scope.refreshIssues();
 

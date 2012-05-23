@@ -77,10 +77,16 @@
                 
                 
                 <form class="task task-form form-inline" ng-submit="addTask(i)" ng-controller="TaskCtrl">
-                    <input type="text" ng-model="description" size="30" placeholder="Task Description" />
-                    <button type="submit" class="btn " ng-disabled="!description">
-                        <i class="icon-plus"></i> Add
-                    </button>
+                    <div class="row-fluid">
+                        <div class="span9">
+                            <input class="input-block-level" type="text" ng-model="description" size="30" placeholder="Task Description" />
+                        </div>
+                        <div class="span3">
+                         
+                            <button type=" submit" class="btn" ng-disabled="!description">Add</button>
+                         
+                        </div>
+                    </div>
                 </form>
        
             </td>

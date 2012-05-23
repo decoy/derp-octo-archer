@@ -21,7 +21,7 @@
                 <div class="control-group" >
                     <label class="control-label">Labels</label>
                     <div class="controls">
-                        <select  ng-model="selectedLabel" ng-options="l.name for l in labels.labels | orderBy : 'name'" placeholder="issue label">
+                        <select  ng-model="selectedLabel" ng-options="l.name for l in labels.tags | orderBy : 'name'" placeholder="issue label">
                         </select>
                     </div>
                 </div>

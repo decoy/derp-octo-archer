@@ -1,5 +1,11 @@
-//TODO move to a module or something...
-//get the URL paremeters on startup
+//Some variables
+//TODO - where do these go in angular??
+var TASK_PATTERN = /\[TASK[\s+]?(?:([^\s^@]+)?[\s+]?)?(?:@([\S]+))?\]/;  //matches [TASK STATUS @USER] or [TASK STATUS] or [TASK @USER]
+var ESTIMATE_PREFIX = "~"; //first character after the prefix is used for sorting, after that is the actual name
+var STATUS_PREFIX = "#"; //first character after the prefix is used for sorting, after that is the actual name
+
+//get the token
+//TODO where does this go in angular?
 var urlParams = {};
 (function () {
     var e,
@@ -14,7 +20,7 @@ var urlParams = {};
 
 var api_token = urlParams.token;
 
-//function to split up labels...
+//function to split up labels...  TODO where does this go?
 function parseLabels(labels) {
 
     var r = {};
@@ -32,12 +38,12 @@ function parseLabels(labels) {
 
     //sort the labels into the different buckets
     angular.forEach(labels, function(l, key) {
-        if (l.name.slice(0, 3).toLowerCase() == "est") {
-            l.friendlyName = l.name.slice(4).trim();
+        if (l.name.slice(0, ESTIMATE_PREFIX.length).toLowerCase() == ESTIMATE_PREFIX) {
+            l.friendlyName = l.name.slice(ESTIMATE_PREFIX.length + 1).trim();
             r.estimates.push(l);
             
-        } else if (l.name.slice(0, 6).toLowerCase() == "status") {
-            l.friendlyName = l.name.slice(7).trim();
+        } else if (l.name.slice(0, STATUS_PREFIX.length).toLowerCase() == STATUS_PREFIX) {
+            l.friendlyName = l.name.slice(STATUS_PREFIX.length + 1).trim();
             r.statuses.push(l);
             
         } else {
@@ -50,11 +56,28 @@ function parseLabels(labels) {
 };
 
 
-var bettertask = /\[TASK[\s+]?(?:([^\s^@]+)?[\s+]?)?(?:@([\S]+))?\]/;
 
 
-//this is a simple service module for the github API v3
+//this is a simple service module for the github API v3 issues
 angular.module('github.service.v3', ['ngResource'])
+
+    .config(function() {
+        
+        var urlParams = {};
+        
+        (function () {
+            var e,
+                a = /\+/g,  // Regex for replacing addition symbol with a space
+                r = /([^&=]+)=?([^&]*)/g,
+                d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+                q = window.location.search.substring(1);
+
+            while (e = r.exec(q))
+               urlParams[d(e[1])] = d(e[2]);
+        })();
+        
+        var api_token = urlParams.token;
+    })
 
     //the repository...
     .factory('Repository', function($resource) {
@@ -120,7 +143,7 @@ angular.module('github.service.v3', ['ngResource'])
                 self.comment_details = [];
                 self.task_details = [];
                 angular.forEach(data, function(value, key) {
-                    var matches = value.body.match(bettertask);
+                    var matches = value.body.match(TASK_PATTERN);
                     if (!matches) self.comment_details.push(value);
                     else {
                         value.status = matches[1];
@@ -164,8 +187,12 @@ angular.module('github.service.v3', ['ngResource'])
                 angular.forEach(data, function(value, key) {
                     value.owner = args.owner;
                     value.repo = args.repo;
-                    value.parseLabels();
+                    //parse them...
                 });
+                var r = parseLabels(data);
+                data.tags = r.tags;
+                data.estimates = r.estimates;
+                data.statuses = r.statuses;
                 cb && cb(data);
             }, err);
         };
