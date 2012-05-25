@@ -65,8 +65,12 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
         
         //set the new body
         var body = task.body.replace(TASK_PATTERN, '');
-        body = "[TASK " + status + " @" + $scope.user.login + "] " + body.trim();
         
+        if (status == $scope.states[0]) {
+            body = "[TASK " + status.friendlyName + "] " + body.trim();
+        } else {
+            body = "[TASK " + status.friendlyName + " @" + $scope.user.login + "] " + body.trim();
+        }
 
         //create the task update object
         var newTask = new Comment({body:body});
@@ -75,7 +79,11 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
             //if successful, update the existing task body to avoid re-downloading to re-parse
             task.body = body;
             task.status = status.friendlyName;
-            task.assigned = $scope.user.login; 
+            if (status != $scope.states[0]) {
+                task.assigned = $scope.user.login;
+            } else {
+                task.assigned = null;
+            }
             //self.refreshIssueComments($scope.i);
         });
     };
