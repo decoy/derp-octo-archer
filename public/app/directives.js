@@ -65,15 +65,31 @@ angular.module('derpoa.directive', [])
         };
     })
     
+    
+   
+    
     .directive('coolFade', function() {
-        return {
-            compile: function(elm) {
-                //console.log('compiling');
-                $(elm).css('opacity', 0);
-                return function(scope, elm, attrs) {
-                    // console.log('animating');
-                    $(elm).animate({ opacity : 1.0 }, 1000 );
-                };
-            }
+        return function(scope, element, attrs) {
+            $(element).css({ position: 'relative'});
+            $(element).css({ transition: 'all 0.6s ease'});
+            $(element).css({ '-webkit-transition': 'all 0.6s ease'});
+
+    
+    
+            scope.$watch(attrs.coolFade, function(value){
+            
+                if (value) {
+                    $(element).css({ visibility: 'visible' });
+                    $(element).css({ height: 'auto' });
+                    
+                    //$(element).show('blind', 'fast');
+                } else {
+                    //$(element).hide('blind', 'fast');
+                    $(element).css({ visibility: 'hidden' });
+                    $(element).css({ height: '0' });
+                }
+                //element.css('display', value ? '' : 'none');
+            });
+      
         };
     });

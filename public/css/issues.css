@@ -90,3 +90,9 @@ form.task-form {
     display:table-cell; vertical-align:bottom;
 
 }
+
+.task-status-closed {
+    text-decoration: line-through;
+    color: grey;
+}
+

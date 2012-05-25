@@ -21,6 +21,11 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
     
     $scope.showIssueTasks = true; //start expanded...
     
+    Label.getLabels({owner:$scope.owner, repo:$scope.repoName}, function(data) {
+        
+        $scope.states = data.statuses;
+    });
+    
     $scope.states = ['open', 'working', 'closed'];
 
     $scope.milestone = "";
@@ -45,16 +50,23 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
     });
     
     $scope.changeIssueStatus = function(issue, status) {
-        var bob = issue;
+        //make sure it's a new status...
+        if (issue.status.name != status.name) {
+            
+            issue.setState(status, $scope.user.login);
+
+        }
+        //var bob = issue;
     };
     
     $scope.changeTaskStatus = function(task, status) {
     
-        if (task.status == status) return;  //already set.
+        if (task.status == status.friendlyName) return;  //already set.
         
         //set the new body
-        var body = task.body.replace(bettertask, '');
+        var body = task.body.replace(TASK_PATTERN, '');
         body = "[TASK " + status + " @" + $scope.user.login + "] " + body.trim();
+        
 
         //create the task update object
         var newTask = new Comment({body:body});
@@ -62,8 +74,8 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
             //task = data;
             //if successful, update the existing task body to avoid re-downloading to re-parse
             task.body = body;
-            task.status = status;
-            task.assigned = $scope.user.login;
+            task.status = status.friendlyName;
+            task.assigned = $scope.user.login; 
             //self.refreshIssueComments($scope.i);
         });
     };
@@ -74,6 +86,8 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
     });
 
     $scope.refreshIssues = function () {
+        $scope.issues = [];
+    
         //no milestone selected
         if ($scope.milestone == null || $scope.milestone == '') {
             $scope.issues = null;
@@ -85,13 +99,26 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
             angular.forEach(data, function(value, key) {
                 value.comments && value.getComments();  //only get comments if the ticket lists some...
             });
-            $scope.issues = data;
+            $scope.issues.push.apply($scope.issues, data);
         });
+        
+        Issue.getIssues({owner:$scope.owner, repo:$scope.repoName, milestone:$scope.milestone.number, state:'closed'}, function (data) {
+            angular.forEach(data, function(value, key) {
+                value.comments && value.getComments();  //only get comments if the ticket lists some...
+            });
+            $scope.issues.push.apply($scope.issues, data);
+        });
+        
     };
 
     
-    $scope.filterIssuesWithTasks = function (issue) {
+    $scope.filterIssuesWithTasks = function (issue, test) {
         if (issue.task_details && issue.task_details.length > 0) return true;
+    };
+    
+    //there's got to be a better way....
+    $scope.filterIssuesWithNoTasks = function (issue, test) {
+        if (!issue.task_details || issue.task_details.length <= 0) return true;
     };
 }
 ;
@@ -103,7 +130,7 @@ function TaskCtrl($scope, IssueComments) {
         $scope.addTask = function (issue) {
         
             //set the new body
-            var body = "[TASK NEW] " + $scope.description.trim();
+            var body = "[TASK " + $scope.states[0].friendlyName + "] " + $scope.description.trim();
 
             //create the task update object
             var newTask = new IssueComments({body:body});

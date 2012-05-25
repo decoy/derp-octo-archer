@@ -13,70 +13,101 @@
 
 
 <div class="row-fluid">
-    <div class="span6">
+    <div class="span4">
         <h5>Milestone</h5>
         <select ng-model="milestone" ng-options="m.title for m in milestones | orderBy : 'due_on'">
-            <option value="">-- chose milestone --</option>
+            <option value="">-- Choose Milestone --</option>
         </select>
     </div>
-    <div class="span4"><span ng-show="milestone">{{milestone.open_issues}} open | {{milestone.closed_issues}} closed <br/> {{milestone.due_on | date:short}}</span></div>
-    <div class="span2"><a class="btn pull-right" href="#/repo/{{owner}}/{{repoName}}"><i class="icon-calendar"></i> Planner</a></div>
+    <div class="span4">
+        <div ng-show="milestone"> 
+            Due on {{milestone.due_on | date:short}}
+            <div class="progress " rel="tooltip" title="{{milestone.open_issues}} open | {{milestone.closed_issues}} closed">
+                <div class="bar" style="width: {{(milestone.closed_issues / (milestone.open_issues + milestone.closed_issues)) * 100}}%;"></div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="span4"><a class="btn pull-right" href="#/repo/{{owner}}/{{repoName}}"><i class="icon-calendar"></i> Planner</a></div>
 </div>
 
 <hr/>
 
 
 
-<div class="">
 
-<!--
 <table class="task-table">
         <thead>
-            <th ng-repeat="s in states">{{s}}</th>
+            <th ng-repeat="s in states">{{s.friendlyName}}</th>
         </thead>
 </table>
 
 <table class="task-table">
     <tbody>
         <tr>
-            <td droppable="drop(draggable,'open');" class="well" ng-repeat="s in states">
-                <div class="task" draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: { task_details.length : 0, state: s }">
+            <td droppable="changeIssueStatus(draggable,s);" class="well" ng-repeat="s in states">
+                <div class="task" draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: filterIssuesWithNoTasks | filter: {status: s.name } ">
                     <div class="row-fluid">
-                        <div class="span10">
+                        <div class="span8">
                             <h4 ng-show="true" class="">
-                                <a href="{{i.html_url}}">#{{i.number}}</a>
-                                {{i.title}} 
+                                <span class="task-status-{{i.status.friendlyName}}">
+                                    <a href="{{i.html_url}}">#{{i.number}}</a> {{i.title}} 
+                                </span>
                                 <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.tags | orderBy: 'color'">{{l.name}}</span>
                             </h4>
                         </div>
                         <div class="span2">
-                            <button class="btn btn-mini pull-right"><i class="icon-plus"></i></button>
+                            <img ng-show="i.assignee" class="thumbnail inline pull-right" ng-src="{{i.assignee.avatar_url}}" height="25" alt="{{i.assignee.login}}"/>
+                            
                         </div>
+                        <div class="span2">
+                            
+                            <button class="btn btn-mini pull-right " ng-click="showAddTask=!showAddTask" rel="tooltip" title="Add Task"><i class="icon-plus" ng-show="!showAddTask"></i><i class="icon-minus" ng-show="showAddTask"></i></button>
+                        </div>
+                    </div>
+
+                    <form ng-show="showAddTask" class="task task-form form-inline" ng-submit="addTask(i)" ng-controller="TaskCtrl">
+                        <div class="row-fluid">
+                            <div class="span9">
+                                <input class="input-block-level" type="text" ng-model="description" size="30" placeholder="Task Description" />
+                            </div>
+                            <div class="span3">
+                                <button type=" submit" class="btn" ng-disabled="!description">Add</button>
+                            </div>
+                        </div>
+                    </form>
                     </div>
                 </div>
             </td>
         </tr>
     </tbody>
 </table>
--->
 
-<div ng-repeat="i in issues | orderBy: 'number'"> <!-- | filter: filterIssuesWithTasks -->
+
+<div ng-repeat="i in issues | filter: filterIssuesWithTasks | orderBy: ['-state','number'] ">
 
 <table class="task-table ">
     <tbody >
         <tr>
-            <td colspan="3" class="task-bin">
-                <h3 ng-show="true" class=""><button class="btn btn-mini" ng-click="showIssueTasks=!showIssueTasks;"><i ng-show="!showIssueTasks" class="icon-chevron-down"></i><i ng-show="showIssueTasks" class="icon-chevron-up"></i> </button>  <a href="{{i.html_url}}">#{{i.number}}</a> {{i.title}} <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.tags | orderBy: 'color'">{{l.name}}</span> </h3>
+            <td colspan="{{states.length}}" class="task-bin">
+                <h3 ng-show="true" class="">
+                    <button class="btn btn-mini" ng-click="showIssueTasks=!showIssueTasks;">
+                        <i ng-show="!showIssueTasks" class="icon-chevron-down"></i><i ng-show="showIssueTasks" class="icon-chevron-up"></i>
+                    </button>
+                    <span class="task-status-{{i.status.friendlyName}}">
+                        <a href="{{i.html_url}}">#{{i.number}}</a> {{i.title}} 
+                    </span>
+                    <span class="label issue-label" style="background-color: #{{l.color}}" ng-repeat="l in i.tags | orderBy: 'color'">{{l.name}}</span> 
+                </h3>
             </td>
         </tr>
         <tr ng-show="showIssueTasks">
-            <td droppable="changeTaskStatus(draggable, 'NEW');" class="well">
-  
-                <task ng-model="c" ng-repeat="c in i.task_details | orderBy: 'updated_at' | filter: '[TASK NEW'" draggable >
+            <td droppable="changeTaskStatus(draggable,s);" class="well" ng-repeat="s in states">
+                
+                <task ng-model="c" ng-repeat="c in i.task_details | orderBy: 'updated_at' | filter: {status: s.friendlyName }" draggable  >
                 </task>
-                
-                
-                <form class="task task-form form-inline" ng-submit="addTask(i)" ng-controller="TaskCtrl">
+
+                <form ng-show="s.name == 'open'" class="task task-form form-inline" ng-submit="addTask(i)" ng-controller="TaskCtrl">
                     <div class="row-fluid">
                         <div class="span9">
                             <input class="input-block-level" type="text" ng-model="description" size="30" placeholder="Task Description" />
@@ -90,24 +121,11 @@
                 </form>
        
             </td>
-            <td droppable="changeTaskStatus(draggable, 'WORKING');" class="well">
-                <task ng-model="c" ng-repeat="c in i.task_details | orderBy: 'updated_at' | filter: '[TASK WORKING'" draggable >
-                </task>
-            </td>
-            <td droppable="changeTaskStatus(draggable, 'DONE');" class="well">
-                <task ng-model="c" ng-repeat="c in i.task_details | orderBy: 'updated_at' | filter: '[TASK DONE'" draggable >
-                </task>
-            </td>
         </tr>
-        <tr>
-            <td>
-           
-            </td>
-        </tr>
+
     </tbody>
 </table>
 
 </div>
 
-</div>
   
