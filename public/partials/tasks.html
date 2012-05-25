@@ -45,7 +45,8 @@
 <table class="task-table">
     <tbody>
         <tr>
-            <td droppable="changeIssueStatus(draggable,s);" class="well" ng-repeat="s in states">
+            <td droppable="changeIssueStatus(draggable,s);" class="well" ng-repeat="s in states" ng-show="(issues | filter: filterIssuesWithNoTasks).length > 0">
+                
                 <div class="task" draggable ng-model="i" ng-repeat="i in issues | orderBy: 'number' | filter: filterIssuesWithNoTasks | filter: {status: s.name } ">
                     <div class="row-fluid">
                         <div class="span8">
@@ -61,7 +62,6 @@
                             
                         </div>
                         <div class="span2">
-                            
                             <button class="btn btn-mini pull-right " ng-click="showAddTask=!showAddTask" rel="tooltip" title="Add Task"><i class="icon-plus" ng-show="!showAddTask"></i><i class="icon-minus" ng-show="showAddTask"></i></button>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                             </div>
                         </div>
                     </form>
-                    </div>
+          
                 </div>
             </td>
         </tr>
