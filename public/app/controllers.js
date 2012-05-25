@@ -53,7 +53,11 @@ function TasksController($scope, $routeParams, Issue, Milestone, Label, IssueCom
         //make sure it's a new status...
         if (issue.status.name != status.name) {
             
-            issue.setState(status, $scope.user.login);
+            var assignee = null;
+            if (status != $scope.states[0]) {
+                assignee = $scope.user.login;
+            }
+            issue.setState(status, assignee);
 
         }
         //var bob = issue;
