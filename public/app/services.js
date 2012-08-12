@@ -80,7 +80,7 @@ angular.module('github.service.v3', ['ngResource'])
     .factory('Repository', function($resource) {
         var Repository = $resource(
             'https://api.github.com/user/repos',
-            { access_token: api_token },
+            { access_token: api_token, _: new Date().getTime() },
             {
             }
         );
@@ -92,7 +92,7 @@ angular.module('github.service.v3', ['ngResource'])
     .factory('Issue', function($resource, $http, IssueComments, IssueLabels, Comment) {
         var Issue = $resource(
             'https://api.github.com/repos/:owner/:repo/issues/:number',
-            { access_token: api_token, repo: "@repo", owner: "@owner", number:"@number" },
+            { access_token: api_token, repo: "@repo", owner: "@owner", number:"@number" , _: new Date().getTime() },
             {
                 'update':   {method:'PATCH'},
             }
@@ -190,7 +190,7 @@ angular.module('github.service.v3', ['ngResource'])
     .factory('Milestone', function($resource) {
         var Milestone = $resource(
             'https://api.github.com/repos/:owner/:repo/milestones/:number',
-            { access_token: api_token },
+            { access_token: api_token, _: new Date().getTime() },
             {
                 'update':   {method:'PATCH'},
             }
@@ -203,7 +203,7 @@ angular.module('github.service.v3', ['ngResource'])
     .factory('Label', function($resource) {
         var Label = $resource(
             'https://api.github.com/repos/:owner/:repo/labels/:name',
-            { access_token: api_token },
+            { access_token: api_token, _: new Date().getTime() },
             {
                 'save':   {method:'POST'},
             }
@@ -237,7 +237,7 @@ angular.module('github.service.v3', ['ngResource'])
     .factory('Comment', function($resource) {
         var Comment = $resource(
             'https://api.github.com/repos/:owner/:repo/issues/comments/:id',
-            { access_token: api_token },
+            { access_token: api_token, _: new Date().getTime() },
             {
             }
         );
@@ -249,7 +249,7 @@ angular.module('github.service.v3', ['ngResource'])
     .factory('IssueComments', function($resource) {
         var IssueComments = $resource(
             'https://api.github.com/repos/:owner/:repo/issues/:number/comments',
-            { access_token: api_token },
+            { access_token: api_token, _: new Date().getTime() },
             {
             }
         );
@@ -261,7 +261,7 @@ angular.module('github.service.v3', ['ngResource'])
     .factory('IssueLabels', function($resource) {
         var IssueLabels = $resource(
             'https://api.github.com/repos/:owner/:repo/issues/:number/labels',
-            { access_token: api_token },
+            { access_token: api_token, _: new Date().getTime() },
             {
             }
         );
@@ -273,7 +273,7 @@ angular.module('github.service.v3', ['ngResource'])
     .factory('LoggedInUser', function($resource) {
         var LoggedInUser = $resource(
             'https://api.github.com/user',
-            { access_token: api_token },
+            { access_token: api_token, _: new Date().getTime() },
             {
             }
         );
